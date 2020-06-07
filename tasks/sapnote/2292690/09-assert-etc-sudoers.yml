@@ -2,11 +2,17 @@
 
 - debug:
     msg: "SAP note 2292690 Step 9: Database startup fails with an error message - /etc/sudoers"
-- name: Ensure "Defaults requiretty" is not set in /etc/sudoers
-  lineinfile:
-    path: /etc/sudoers
-    state: absent
-    regexp: '^Defaults[ \s]*requiretty'
-    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Get contents of /etc/sudoers
+  command: grep '^Defaults[ \s]*requiretty' /etc/sudoers
+  register: grep_result
+
+- name: Assert that "Defaults requiretty" is not set in /etc/sudoers
+  assert:
+    that:
+      - grep_result.rc == 1
+    fail_msg: "FAIL: The string 'Defaults requiretty' was found in /etc/sudoers!"
+    success_msg: "PASS: The string 'Defaults requiretty' was not found in /etc/sudoers!"
+  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...
