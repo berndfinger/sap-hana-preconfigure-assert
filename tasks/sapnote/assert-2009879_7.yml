@@ -23,92 +23,92 @@
   block:
     - name: ... in case of RHEL 7.2
       block:
-        - name: Get info about file /usr/lib64/libssl.so.1.0.1e
+        - name: Get info about file /usr/lib64/libssl.so.1.0.1
           stat:
-            path: /usr/lib64/libssl.so.1.0.1e
+            path: /usr/lib64/libssl.so.1.0.1
           register: stat_libssl_1
 
-        - name: Assert that file /usr/lib64/libssl.so.1.0.1e exists and is a link
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1 exists and is a link
           assert:
             that:
               - stat_libssl_1.stat.islnk == true
-            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1e does not exist or is no link!"
-            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1e exist and is a link."
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1 exist and is a link."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Assert that file /usr/lib64/libssl.so.1.0.1e is a link to /usr/lib64/libssl.so.1.0.1
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1 is a link to /usr/lib64/libssl.so.1.0.1
           assert:
             that:
-              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libssl.so.1.0.1'
-            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1e is not a link to /usr/lib64/libssl.so.1.0.1!"
-            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1e is a link to /usr/lib64/libssl.so.1.0.1."
+              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libssl.so.1.0.1e'
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1 is not a link to /usr/lib64/libssl.so.1.0.1e!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1 is a link to /usr/lib64/libssl.so.1.0.1e."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Get info about file /usr/lib64/libcrypto.so.1.0.1e
+        - name: Get info about file /usr/lib64/libcrypto.so.1.0.1
           stat:
-            path: /usr/lib64/libcrypto.so.1.0.1e
+            path: /usr/lib64/libcrypto.so.1.0.1
           register: stat_libcrypto_1
 
-        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1e exists and is a link
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1 exists and is a link
           assert:
             that:
-              - stat_libssl_1.stat.islnk == true
-            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1e does not exist or is no link!"
-            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1e exist and is a link."
+              - stat_libcrypto_1.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1 exist and is a link."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1e is a link to /usr/lib64/libcrypto.so.1.0.1
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1 is a link to /usr/lib64/libcrypto.so.1.0.1
           assert:
             that:
-              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libcrypto.so.1.0.1'
-            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1e is not a link to /usr/lib64/libcrypto.so.1.0.1!"
-            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1e is a link to /usr/lib64/libcrypto.so.1.0.1."
+              - stat_libcrypto_1.stat.lnk_target == '/usr/lib64/libcrypto.so.1.0.1e'
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1 is not a link to /usr/lib64/libcrypto.so.1.0.1e!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1 is a link to /usr/lib64/libcrypto.so.1.0.1e."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
       when: ansible_distribution_version  == '7.2'
 
-    - name: ... in case of RHEL 7.2
+    - name: ... in case of RHEL 7.3 and above
       block:
-        - name: Get info about file /usr/lib64/libssl.so.10
+        - name: Get info about file /usr/lib64/libssl.so.1.0.1
           stat:
-            path: /usr/lib64/libssl.so.10
+            path: /usr/lib64/libssl.so.1.0.1
           register: stat_libssl_2
 
-        - name: Assert that file /usr/lib64/libssl.so.10 exists and is a link
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1 exists and is a link
           assert:
             that:
               - stat_libssl_2.stat.islnk == true
-            fail_msg: "FAIL: File /usr/lib64/libssl.so.10 does not exist or is no link!"
-            success_msg: "PASS: File /usr/lib64/libssl.so.10 exist and is a link."
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1 exist and is a link."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Assert that file /usr/lib64/libssl.so.10 is a link to /usr/lib64/libssl.so.1.0.1
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1 is a link to /usr/lib64/libssl.so.1.0.1
           assert:
             that:
-              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libssl.so.1.0.1'
-            fail_msg: "FAIL: File /usr/lib64/libssl.so.10 is not a link to /usr/lib64/libssl.so.1.0.1!"
-            success_msg: "PASS: File /usr/lib64/libssl.so.10 is a link to /usr/lib64/libssl.so.1.0.1."
+              - stat_libssl_2.stat.lnk_target == '/usr/lib64/libssl.so.10'
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1 is not a link to /usr/lib64/libssl.so.10!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1 is a link to /usr/lib64/libssl.so.10."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Get info about file /usr/lib64/libcrypto.so.10
+        - name: Get info about file /usr/lib64/libcrypto.so.1.0.1
           stat:
-            path: /usr/lib64/libcrypto.so.10
+            path: /usr/lib64/libcrypto.so.1.0.1
           register: stat_libcrypto_2
 
-        - name: Assert that file /usr/lib64/libcrypto.so.10 exists and is a link
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1 exists and is a link
           assert:
             that:
-              - stat_libssl_1.stat.islnk == true
-            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.10 does not exist or is no link!"
-            success_msg: "PASS: File /usr/lib64/libcrypto.so.10 exist and is a link."
+              - stat_libcrypto_2.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1 exist and is a link."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-        - name: Assert that file /usr/lib64/libcrypto.so.10 is a link to /usr/lib64/libcrypto.so.1.0.1
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1 is a link to /usr/lib64/libcrypto.so.10
           assert:
             that:
-              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libcrypto.so.1.0.1'
-            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.10 is not a link to /usr/lib64/libcrypto.so.1.0.1!"
-            success_msg: "PASS: File /usr/lib64/libcrypto.so.10 is a link to /usr/lib64/libcrypto.so.1.0.1."
+              - stat_libcrypto_2.stat.lnk_target == '/usr/lib64/libcrypto.so.10'
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1 is not a link to /usr/lib64/libcrypto.so.10!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1 is a link to /usr/lib64/libcrypto.so.10."
           ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
       when: ansible_distribution_version != '7.2'

@@ -11,7 +11,7 @@
 #      check_mode: no
 #      register: command_check_result
 #      ignore_errors: true
-#      changed_when: false
+#      changed_when: no
 
 #    - debug:
 #        var: command_check_result.stdout_lines, command_check_result.stderr_lines

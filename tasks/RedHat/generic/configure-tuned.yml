@@ -14,7 +14,7 @@
       command: bash -lc "/usr/sbin/tuned-adm active | grep ":" | cut -d ":" -f 2 | awk '{$1=$1;print}'"
       check_mode: no
       register: current_profile
-      changed_when: false
+      changed_when: no
     - debug:
         var: current_profile.stdout_lines, current_profile.stderr_lines
 
@@ -25,7 +25,7 @@
         - name: Show active tuned profile
           command: bash -lc "/usr/sbin/tuned-adm active | grep ":" | cut -d ":" -f 2 | awk '{$1=$1;print}'"
           register: new_profile
-          changed_when: false
+          changed_when: no
         - debug:
             var: new_profile.stdout_lines, new_profile.stderr_lines
 
@@ -58,7 +58,7 @@
       command: bash -lc "/usr/sbin/tuned-adm active | grep ":" | cut -d ":" -f 2 | awk '{$1=$1;print}'"
       check_mode: no
       register: current_profile_ppc64le
-      changed_when: false
+      changed_when: no
     - debug:
         var: current_profile_ppc64le.stdout_lines, current_profile_ppc64le.stderr_lines
 
@@ -70,7 +70,7 @@
         - name: Show active tuned profile
           command: bash -lc "/usr/sbin/tuned-adm active | grep ":" | cut -d ":" -f 2 | awk '{$1=$1;print}'"
           register: new_profile_ppc64le
-          changed_when: false
+          changed_when: no
         - debug:
             var: new_profile_ppc64le.stdout_lines, new_profile_ppc64le.stderr_lines
 

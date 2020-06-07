@@ -2,6 +2,9 @@
 
 - debug:
     msg: "SAP note 2292690 Step 1: Configure tuned to use profile sap-hana"
-- import_tasks: ../../RedHat/generic/assert-tuned.yml
+#- import_tasks: ../../RedHat/generic/assert-tuned.yml
+
+- debug:
+    msg: "WARN: Check of tuned profile sap-hana not implemented. Please check manually!"
 
 ...

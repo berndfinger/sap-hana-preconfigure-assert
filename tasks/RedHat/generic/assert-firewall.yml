@@ -40,7 +40,7 @@
 
   when: "'firewalld' in ansible_facts.packages"
 
-- name: Report firewall install status:
+- name: Report firewall install status
   debug:
     msg: "PASS: Service 'firewalld' is not installed."
 

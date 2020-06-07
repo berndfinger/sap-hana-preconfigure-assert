@@ -17,7 +17,7 @@
 #       /rhel-sap-hana-for-rhel-{{ ansible_distribution_major_version }}-server-e[4u]s-rpms/ {a++} 
 #       END {print a}'
 #  register: sap_hana_preconfigure_assert_register_eus
-#  changed_when: false
+#  changed_when: no
 
 #- name: Output warning
 #  debug:
@@ -28,6 +28,6 @@
 
 ### Package installation is done in installation.yml
 
-- include_tasks: 2009879_{{ ansible_distribution_major_version }}.yml
+- include_tasks: assert-2009879_{{ ansible_distribution_major_version }}.yml
 
 ...

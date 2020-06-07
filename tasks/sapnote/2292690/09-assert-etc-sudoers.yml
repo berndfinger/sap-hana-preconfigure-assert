@@ -6,6 +6,8 @@
 - name: Get contents of /etc/sudoers
   command: grep '^Defaults[ \s]*requiretty' /etc/sudoers
   register: grep_result
+  changed_when: no
+  ignore_errors: yes
 
 - name: Assert that "Defaults requiretty" is not set in /etc/sudoers
   assert:

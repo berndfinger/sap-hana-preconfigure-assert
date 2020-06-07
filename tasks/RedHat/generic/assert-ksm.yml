@@ -26,7 +26,7 @@
   command: awk '/ksm/{print}' /etc/init.d/boot.local
   register: awk_ksm_boot_local_result
   ignore_errors: true
-  changed_when: false
+  changed_when: no
 
 - name: Assert that ksm is disabled in /etc/init.d/boot.local
   assert:
@@ -40,7 +40,7 @@
   command: cat /sys/kernel/mm/ksm/run
   register: ksm_running_result
   ignore_errors: true
-  changed_when: false
+  changed_when: no
 
 - name: Assert that ksm is disabled in /etc/init.d/boot.local
   assert:
