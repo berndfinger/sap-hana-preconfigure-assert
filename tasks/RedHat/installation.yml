@@ -1,0 +1,146 @@
+---
+
+##########################################################################################
+# 
+# NOTE: THE installation part will completely fail, 
+# - if the system is not connected to proper copied RedHat Repositories 
+#   (no group definition available)
+# - is disconnected with no repos configured at all
+#
+##########################################################################################
+
+- block:
+# repos required for SAP HANA on RHEL 7 and RHEL 8:
+  - set_fact:
+      __sap_hana_preconfigure_assert_required_repos: "{{ lookup('vars','sap_hana_preconfigure_assert_req_repos_RedHat_' +
+      ansible_distribution_major_version|string + '_' + ansible_architecture|string) }}"
+
+  - name: Enable E4S repositories
+    rhsm_repository:
+      name: "{{ __sap_hana_preconfigure_assert_required_repos }}"
+      state: present
+
+  when: sap_hana_preconfigure_assert_enable_sap_hana_repos
+  
+#- name: Ensure that the RHEL minor relase is fixed
+#  rhsm_release:
+#    release: "{{ ansible_distribution_version }}"
+
+- name: Detect if the minor RHEL release is set
+  shell: subscription-manager release --show | awk '{print $NF}'
+  register: subscription_manager_release_result
+  changed_when: false
+  when:
+    - sap_hana_preconfigure_assert_set_minor_release
+
+- name: Set the minor RHEL release
+  shell: subscription-manager release --set="{{ ansible_distribution_version }}"
+  when:
+    - sap_hana_preconfigure_assert_set_minor_release
+    - subscription_manager_release_result.stdout != ansible_distribution_version
+
+- name: Ensure required package groups are installed
+  package: 
+    state: present 
+    name: "{{ __sap_hana_preconfigure_assert_packagegroups }}"
+
+- name: Ensure required packages are installed
+  package:
+    state: present
+    name: "{{ __sap_hana_preconfigure_assert_packages }}"
+  register: sap_hana_preconfigure_assert_register_groupinstall
+
+- name: Get status of installed packages
+  yum:
+    name: "{{ __sap_hana_preconfigure_assert_packages }}"
+  register: result
+  ignore_errors: True
+  changed_when: false
+- debug:
+    var: result.results
+
+- name: Ensure system is updated to the latest patchlevel
+  package:
+    state: latest
+    name: "*"
+  when: sap_hana_preconfigure_assert_update|bool
+
+### If this task fails, you need to enable the IBM PowerTools repository
+### see https://www14.software.ibm.com/support/customercare/sas/f/lopdiags/home.html for details
+##
+### # yum -y install http://public.dhe.ibm.com/software/server/POWER/Linux/yum/download/ibm-power-repo-latest.noarch.rpm
+### # /opt/ibm/lop/configure
+### # yum -y install ibm-power-managed-rhel7
+###
+- name: Install IBM Tools 
+  package:
+    state: latest
+    name: "{{ __sap_hana_preconfigure_assert_required_ppc64le }}"
+  when: ansible_architecture == "ppc64le" 
+
+- name: Ensure minimum packages are installed
+  block:
+    - name: check if minimum release needs to be installed
+      shell: |
+        set -x
+        required_pkg={{ pkg | join('-') }}
+        newest=$(echo -e "$required_pkg\n$(rpm -q {{ pkg[0] }} )"| sort -V | tail -1)
+        if [ $newest == $required_pkg ]; then
+           echo $newest
+        fi
+      loop: "{{ sap_hana_preconfigure_assert_min_pkgs }}"
+      loop_control:
+        loop_var: pkg
+      check_mode: no
+      register: sap_hana_preconfigure_assert_register_minpkglist
+      changed_when: false
+
+    - name: Initialize an empty list for our strings
+      set_fact:
+        sap_hana_preconfigure_assert_fact_minpkglist: []
+
+    - name: Create list of packages to be installed
+      set_fact:
+        sap_hana_preconfigure_assert_fact_minpkglist: "{{ sap_hana_preconfigure_assert_fact_minpkglist | difference(['']) + [ pkg.stdout ] }}"
+      loop: "{{ sap_hana_preconfigure_assert_register_minpkglist.results }}"
+      loop_control:
+        loop_var: pkg
+    - debug: var=sap_hana_preconfigure_assert_fact_minpkglist
+
+    - name: Install minimum packages if required
+      yum:
+        name: "{{  sap_hana_preconfigure_assert_fact_minpkglist }}"
+        state: present
+      when: not ( sap_hana_preconfigure_assert_fact_minpkglist == [ "" ] )
+
+  when: 
+    - sap_hana_preconfigure_assert_min_package_check|bool
+    - not( (sap_hana_preconfigure_assert_min_pkgs is undefined) or (sap_hana_preconfigure_assert_min_pkgs is none) or (sap_hana_preconfigure_assert_min_pkgs | trim == '') ) 
+
+- set_fact:
+    needs_restarting_command: "needs-restarting -r"
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '7'
+
+- set_fact:
+    needs_restarting_command: "yum needs-restarting -r"
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '8'
+
+- name: Check if system needs to be restarted
+  command: "{{ needs_restarting_command }}"
+  register: needs_restarting_result
+  ignore_errors: true
+  changed_when: false
+  args:
+    warn: false
+  check_mode: false
+
+- name: Call Reboot handler if necessary
+  command: /bin/true
+  notify: "Reboot handler"
+  when: needs_restarting_result.rc == 1
+
+...
