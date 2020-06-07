@@ -10,8 +10,8 @@
 - name: Assert that net.core.somaxconn is set to 4096 in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
   assert:
     that:
-      - saphana_conf_somaxconn.stdout == '4096'
-    fail_msg: "FAIL: The value of 'net.core.somaxconn' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_somaxconn.stdout }} but the expected value is '4096'!"
+      - saphana_conf_somaxconn_result.stdout == '4096'
+    fail_msg: "FAIL: The value of 'net.core.somaxconn' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_somaxconn_result.stdout }} but the expected value is '4096'!"
     success_msg: "PASS: The value of 'net.core.somaxconn' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is '{{ saphana_conf_somaxconn_result.stdout }}'."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 

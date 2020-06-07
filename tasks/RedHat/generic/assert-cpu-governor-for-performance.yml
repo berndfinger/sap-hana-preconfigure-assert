@@ -23,9 +23,6 @@
         path: /etc/rc.d/rc.local
       register: stat_rc_local
 
-    - debug:
-        var: stat_rc_local
-
     - name: Assert that file /etc/rc.d/rc.local exists
       assert:
         that: "stat_rc_local.stat.isreg == true"
@@ -62,7 +59,7 @@
       ignore_errors: yes
 
     - debug:
-        var: cpupower_result
+        var: cpupower_result.stdout_lines
   
     - name: Assert that the current status of the CPU Governor for performance is XXX (x86_64 platform only)
       assert:

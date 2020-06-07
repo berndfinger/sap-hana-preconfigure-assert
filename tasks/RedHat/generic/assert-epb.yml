@@ -23,29 +23,39 @@
         path: /etc/init.d/boot.local
       register: stat_boot_local
 
-    - debug:
-        var: stat_boot_local
+    - name: Assert that file /etc/init.d/boot.local exists
+      assert:
+        that: "stat_boot_local.stat.isreg == true"
+        fail_msg: "FAIL: The file /etc/init.d/boot.local does not exist or is no regular file!"
+        success_msg: "PASS: The file /etc/init.d/boot.local exists and is a regular file."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-#        - name: Assert that file /etc/init.d/boot.local exists
-#          assert:
-#            that:
-# file exists
-# mode is 0644
+    - name: Assert that the mode of file /etc/init.d/boot.local is 0755
+      assert:
+        that: "stat_boot_local.stat.mode == '0755'"
+        fail_msg: "FAIL: The file /etc/init.d/boot.local has mode '{{ stat_boot_local.stat.mode }}' but the expected mode is '0755'!"
+        success_msg: "PASS: The file /etc/init.d/boot.local has mode 0755."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
     - name: Get the contents of file /etc/init.d/boot.local (x86_64 platform only)
       command: grep cpupower /etc/init.d/boot.local
       register: grep_boot_local_result
       changed_when: no
+      ignore_errors: yes
 
-    - name: Assert that CPU Governor for performance is configured at boot time (x86_64 platform only)
+    - name: Assert that EPB is configured at boot time (x86_64 platform only)
       assert:
         that:
           - "grep_boot_local_result.stdout == 'cpupower set -b 0'"
+        fail_msg: "FAIL: EPB is not configured at boot time!"
+        success_msg: "PASS: EPB is configured at boot time."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
     - name: Get the current setting of EPB (x86_64 platform only)
       command: cpupower info | grep perf-bias
       register: cpupower_epb_result
       changed_when: no
+      ignore_errors: yes
 
     - debug:
         var: cpupower_epb_result
@@ -54,6 +64,9 @@
       assert:
         that:
           - "cpupower_epb_result.stdout == '0'"
+        fail_msg: "FAIL: EPB is currently not configured!"
+        success_msg: "PASS: EPB is currently configured."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 #      when:
 #       - command_check_result.stdout != 'does not support'
