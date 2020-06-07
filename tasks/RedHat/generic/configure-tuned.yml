@@ -18,8 +18,7 @@
     - debug:
         var: current_profile.stdout_lines, current_profile.stderr_lines
 
-    - name: Switch to tuned profile sap-hana if not currently active
-      block:
+    - block:
         - name: Switch to tuned profile sap-hana if not currently active
           command: /usr/sbin/tuned-adm profile sap-hana
         

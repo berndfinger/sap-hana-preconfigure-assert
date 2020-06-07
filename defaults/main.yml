@@ -6,6 +6,8 @@
 # Want extensive debugging
 #debuglevel: 3
 
+sap_hana_preconfigure_assert_ignore_errors: yes
+
 # For checking just some of the configuration steps,
 # 1 - set sap_hana_preconfigure_assert_config_all to "no" (default is "yes"),
 # 2 - set sap_hana_preconfigure_assert_installation or sap_hana_preconfigure_assert_configuration, or both, to "yes" (default for both is "no")
@@ -51,7 +53,7 @@ sap_hana_sps: "0"
 sap_hana_preconfigure_assert_min_package_check: yes
 
 # Set the following variable to "yes" if you want to run "yum update" during the installation part.
-sap_hana_preconfigure_assert_update: no
+sap_hana_preconfigure_assert_update: yes
 
 ###
 #

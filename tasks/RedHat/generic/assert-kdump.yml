@@ -15,7 +15,7 @@
       - "'/usr/lib/systemd/system/kdump.service; disabled' in kdump_status.stdout"
     fail_msg: "FAIL: Service 'kdump' is not disabled!"
     success_msg: "PASS: Service 'kdump' is disabled."
-  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - name: Assert that kdump is inactive
   assert:
@@ -23,6 +23,6 @@
       - "'inactive (dead)' in kdump_status.stdout"
     fail_msg: "FAIL: Service 'kdump' is active!"
     success_msg: "PASS: Service 'kdump' is inactive."
-  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...

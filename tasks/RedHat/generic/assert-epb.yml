@@ -16,15 +16,15 @@
 #    - debug:
 #        var: command_check_result.stdout_lines, command_check_result.stderr_lines
 
-    - name: Change EPB if possible
-      block:
-        - name: Get info about file /etc/init.d/boot.local
-          stat:
-            path: /etc/init.d/boot.local
-          register: stat_boot_local
+- name: Change EPB if possible
+  block:
+    - name: Get info about file /etc/init.d/boot.local
+      stat:
+        path: /etc/init.d/boot.local
+      register: stat_boot_local
 
-        - debug:
-	    var: stat_boot_local
+    - debug:
+        var: stat_boot_local
 
 #        - name: Assert that file /etc/init.d/boot.local exists
 #          assert:
@@ -32,28 +32,28 @@
 # file exists
 # mode is 0644
 
-        - name: Get the contents of file /etc/init.d/boot.local (x86_64 platform only)
-          command: grep cpupower /etc/init.d/boot.local
-          register: grep_boot_local_result
-          changed_when: no
+    - name: Get the contents of file /etc/init.d/boot.local (x86_64 platform only)
+      command: grep cpupower /etc/init.d/boot.local
+      register: grep_boot_local_result
+      changed_when: no
 
-        - name: Assert that CPU Governor for performance is configured at boot time (x86_64 platform only)
-          assert:
-            that:
-              - "grep_boot_local_result.stdout == 'cpupower set -b 0'"
+    - name: Assert that CPU Governor for performance is configured at boot time (x86_64 platform only)
+      assert:
+        that:
+          - "grep_boot_local_result.stdout == 'cpupower set -b 0'"
 
-        - name: Get the current setting of EPB (x86_64 platform only)
-          command: cpupower info | grep perf-bias
-          register: cpupower_epb_result
-          changed_when: no
+    - name: Get the current setting of EPB (x86_64 platform only)
+      command: cpupower info | grep perf-bias
+      register: cpupower_epb_result
+      changed_when: no
 
-        - debug:
-            var: cpupower_epb_result
+    - debug:
+        var: cpupower_epb_result
 
-        - name: Assert that the current setting of EPB is '0' (x86_64 platform only)
-          assert:
-            that:
-              - "cpupower_epb_result.stdout == '0'"
+    - name: Assert that the current setting of EPB is '0' (x86_64 platform only)
+      assert:
+        that:
+          - "cpupower_epb_result.stdout == '0'"
 
 #      when:
 #       - command_check_result.stdout != 'does not support'

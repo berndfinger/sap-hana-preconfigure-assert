@@ -11,9 +11,9 @@
 
 #- block:
 # repos required for SAP HANA on RHEL 7 and RHEL 8:
-  - set_fact:
-      __sap_hana_preconfigure_assert_required_repos: "{{ lookup('vars','sap_hana_preconfigure_assert_req_repos_RedHat_' +
-      ansible_distribution_major_version|string + '_' + ansible_architecture|string) }}"
+- set_fact:
+    __sap_hana_preconfigure_assert_required_repos: "{{ lookup('vars','sap_hana_preconfigure_assert_req_repos_RedHat_' +
+    ansible_distribution_major_version|string + '_' + ansible_architecture|string) }}"
 
 #  - name: Enable E4S repositories
 #    rhsm_repository:
@@ -22,8 +22,8 @@
 
 #  when: sap_hana_preconfigure_assert_enable_sap_hana_repos
 
-- debug:
-    msg: "WARN: Check of required repos not implemented. Please check manually!"
+#- debug:
+#    msg: "WARN: Check of required repos not implemented. Please check manually!"
 
 #- name: Ensure that the RHEL minor relase is fixed
 #  rhsm_release:
@@ -160,6 +160,6 @@
   args:
     warn: false
   check_mode: false
-  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...

@@ -3,8 +3,8 @@
 - debug:
     msg: "imported RedHat/generic/assert-abrt-ccpp.yml"
 
-- debug:
-    var: ansible_facts.packages
+#- debug:
+#    var: ansible_facts.packages
   
 - debug:
     var: ansible_facts.packages['abrt-ccpp']
@@ -29,19 +29,19 @@
 
     - name: Assert that abrt-ccpp is disabled
       assert:
-    	that:
-    	  - "'/usr/lib/systemd/system/abrt-ccpp.service; disabled' in abrt-ccpp_status.stdout"
-    	fail_msg: "FAIL: Service 'abrt-ccpp' is not disabled!"
-    	success_msg: "PASS: Service 'abrt-ccpp' is disabled."
-      ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+        that:
+          - "'/usr/lib/systemd/system/abrt-ccpp.service; disabled' in abrt-ccpp_status.stdout"
+        fail_msg: "FAIL: Service 'abrt-ccpp' is not disabled!"
+        success_msg: "PASS: Service 'abrt-ccpp' is disabled."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
     
     - name: Assert that abrt-ccpp is inactive
       assert:
-    	that:
-    	  - "'inactive (dead)' in abrt-ccpp_status.stdout"
-    	fail_msg: "FAIL: Service 'abrt-ccpp' is active!"
+        that:
+          - "'inactive (dead)' in abrt-ccpp_status.stdout"
+        fail_msg: "FAIL: Service 'abrt-ccpp' is active!"
         success_msg: "PASS: Service 'abrt-ccpp' is inactive."
-      ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
   when: "'abrt-ccpp' in ansible_facts.packages"
 

@@ -34,7 +34,7 @@
 
   when: "'numad' in ansible_facts.packages"
 
-- name: Report numad install status:
+- name: Report numad install status
   debug:
     msg: "PASS: Service 'numad' is not installed."
 
