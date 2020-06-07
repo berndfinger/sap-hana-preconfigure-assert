@@ -19,26 +19,99 @@
 ### 3.8 - Disable Numa Balancing -> SAP Note 2292690 
 
 ### 3.9 - Create the compatibility links for HANA 
-- block:
-  - name: 3.9 create compatibility links for RHEL 7.2
-    file: src=/usr/lib64/{{ line_item.src }} dest=/usr/lib64/{{ line_item.dest }} state=link
-    with_items:
-      - { src: 'libssl.so.1.0.1e', dest: 'libssl.so.1.0.1' }
-      - { src: 'libcrypto.so.1.0.1e', dest: 'libcrypto.so.1.0.1' }
-    when: 
-       ( ansible_distribution_version  == '7.2' )
-    loop_control:
-      loop_var: line_item
+- name: Check if required links exist
+  block:
+    - name: ... in case of RHEL 7.2
+      block:
+        - name: Get info about file /usr/lib64/libssl.so.1.0.1e
+          stat:
+            path: /usr/lib64/libssl.so.1.0.1e
+          register: stat_libssl_1
 
-  - name: 3.9 create compatibility links for RHEL 7.3+
-    file: src=/usr/lib64/{{ line_item.src }} dest=/usr/lib64/{{ line_item.dest }} state=link
-    with_items:
-      - { src: 'libssl.so.10', dest: 'libssl.so.1.0.1' }
-      - { src: 'libcrypto.so.10', dest: 'libcrypto.so.1.0.1' }
-    when: 
-       ( ansible_distribution_version  != '7.2' )
-    loop_control:
-      loop_var: line_item
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1e exists and is a link
+          assert:
+            that:
+              - stat_libssl_1.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1e does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1e exist and is a link."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Assert that file /usr/lib64/libssl.so.1.0.1e is a link to /usr/lib64/libssl.so.1.0.1
+          assert:
+            that:
+              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libssl.so.1.0.1'
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.1.0.1e is not a link to /usr/lib64/libssl.so.1.0.1!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.1.0.1e is a link to /usr/lib64/libssl.so.1.0.1."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Get info about file /usr/lib64/libcrypto.so.1.0.1e
+          stat:
+            path: /usr/lib64/libcrypto.so.1.0.1e
+          register: stat_libcrypto_1
+
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1e exists and is a link
+          assert:
+            that:
+              - stat_libssl_1.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1e does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1e exist and is a link."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Assert that file /usr/lib64/libcrypto.so.1.0.1e is a link to /usr/lib64/libcrypto.so.1.0.1
+          assert:
+            that:
+              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libcrypto.so.1.0.1'
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.1.0.1e is not a link to /usr/lib64/libcrypto.so.1.0.1!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.1.0.1e is a link to /usr/lib64/libcrypto.so.1.0.1."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+      when: ansible_distribution_version  == '7.2'
+
+    - name: ... in case of RHEL 7.2
+      block:
+        - name: Get info about file /usr/lib64/libssl.so.10
+          stat:
+            path: /usr/lib64/libssl.so.10
+          register: stat_libssl_2
+
+        - name: Assert that file /usr/lib64/libssl.so.10 exists and is a link
+          assert:
+            that:
+              - stat_libssl_2.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.10 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.10 exist and is a link."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Assert that file /usr/lib64/libssl.so.10 is a link to /usr/lib64/libssl.so.1.0.1
+          assert:
+            that:
+              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libssl.so.1.0.1'
+            fail_msg: "FAIL: File /usr/lib64/libssl.so.10 is not a link to /usr/lib64/libssl.so.1.0.1!"
+            success_msg: "PASS: File /usr/lib64/libssl.so.10 is a link to /usr/lib64/libssl.so.1.0.1."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Get info about file /usr/lib64/libcrypto.so.10
+          stat:
+            path: /usr/lib64/libcrypto.so.10
+          register: stat_libcrypto_2
+
+        - name: Assert that file /usr/lib64/libcrypto.so.10 exists and is a link
+          assert:
+            that:
+              - stat_libssl_1.stat.islnk == true
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.10 does not exist or is no link!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.10 exist and is a link."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+        - name: Assert that file /usr/lib64/libcrypto.so.10 is a link to /usr/lib64/libcrypto.so.1.0.1
+          assert:
+            that:
+              - stat_libssl_1.stat.lnk_target == '/usr/lib64/libcrypto.so.1.0.1'
+            fail_msg: "FAIL: File /usr/lib64/libcrypto.so.10 is not a link to /usr/lib64/libcrypto.so.1.0.1!"
+            success_msg: "PASS: File /usr/lib64/libcrypto.so.10 is a link to /usr/lib64/libcrypto.so.1.0.1."
+          ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+      when: ansible_distribution_version != '7.2'
 
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_9|d(false)
 
@@ -62,32 +135,48 @@
 
 ### 3.13 - set number of process to unlimited for sapsys group
 - name: 3.13 Set the hard and soft limit for the max number of processes per user (nproc) to unlimited for group sapsys
-  pam_limits:
-    dest: /etc/security/limits.d/99-sap.conf
-    domain: "@sapsys"
-    limit_item: nproc
-    limit_type: "{{ line_item }}"
-    value: unlimited
-  with_items:
-    - hard
-    - soft
-  loop_control:
-    loop_var: line_item
+  block:
+    - name: Get the hard limit of nproc for group sapsys
+      command: awk '/sapsys/&&/nproc/&&/hard/{print $NF}' /etc/security/limits.d/99-sap.conf
+      register: awk_nofile_hard_result
+      changed_when: no
+
+    - name: Assert that the hard limit of nproc is unlimited for group sapsys
+      assert:
+        that:
+          - awk_nofile_hard_result.stdout == 'unlimited'
+        fail_msg: "FAIL: The hard limit of nproc is not set to 'unlimited' in /etc/security/limits.d/99-sap.conf!"
+        success_msg: "PASS: The hard limit of nproc is set to 'unlimited' in /etc/security/limits.d/99-sap.conf."
+      ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+    - name: Get the soft limit of nproc for group sapsys
+      command: awk '/sapsys/&&/nproc/&&/soft/{print $NF}' /etc/security/limits.d/99-sap.conf
+      register: awk_nofile_soft_result
+      changed_when: no
+
+    - name: Assert that the soft limit of nproc is unlimited for group sapsys
+      assert:
+        that:
+          - awk_nofile_soft_result.stdout == 'unlimited'
+        fail_msg: "FAIL: The soft limit of nproc is not set to 'unlimited' in /etc/security/limits.d/99-sap.conf!"
+        success_msg: "PASS: The soft limit of nproc is set to 'unlimited' in /etc/security/limits.d/99-sap.conf."
+      ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_13|d(false)
 
 ### 3.14 - Disable ABRT
-- include_tasks: ../RedHat/generic/disable-abrt.yml
+- include_tasks: ../RedHat/generic/assert-abrtd.yml
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_14_1|d(false)
 
-- include_tasks: ../RedHat/generic/disable-abrt-ccpp.yml
+- include_tasks: ../RedHat/generic/assert-abrt-ccpp.yml
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_14_2|d(false)
 
 ### 3.14 - Disable core Dumps
-- include_tasks: ../RedHat/generic/disable-coredumps.yml
+- include_tasks: ../RedHat/generic/assert-coredumps.yml
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_14_3|d(false)
 
 ### 3.14 - Disable Kdump
-- include_tasks: ../RedHat/generic/disable-kdump.yml
+- include_tasks: ../RedHat/generic/assert-kdump.yml
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_14_4|d(false)
 
 ### 3.15 - Disable Firewalld
@@ -95,7 +184,8 @@
 ### otherwise disable firewall
 ### NYI: Set proper firewall rules if SID/instance number is known
 ###
-- include_tasks: ../RedHat/generic/disable-firewall.yml
+- include_tasks: ../RedHat/generic/assert-firewall.yml
+  when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2009879_3_15|d(false)
 # - name: 3.15 Ensure firewall is disabled when instance ID unknown
 #   service: name=firewalld state=stopped enabled=no
 #   ignore_errors: True

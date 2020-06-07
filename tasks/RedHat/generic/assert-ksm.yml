@@ -1,0 +1,42 @@
+---
+
+- debug:
+    msg: "imported RedHat/generic/disable-ksm.yml"
+
+- name: Get info about file /etc/init.d/boot.local
+  stat:
+    path: /etc/init.d/boot.local
+  register: stat_boot_local
+
+- debug:
+    var: stat_boot_local
+
+#    - name: Assert that file /etc/init.d/boot.local exists
+#      assert:
+#        that:
+# file exists
+# mode is 0755
+
+- name: Get KSM setting in /etc/init.d/boot.local
+  command: awk '/ksm/{print}' /etc/init.d/boot.local
+  register: awk_ksm_boot_local_result
+  ignore_errors: true
+  changed_when: false
+
+- name: Assert that ksm is disabled in /etc/init.d/boot.local
+  assert:
+    that:
+      - "'echo 0 > /sys/kernel/mm/ksm/run' in awk_ksm_boot_local_result.stdout"
+
+- name: Get status of KSM
+  command: cat /sys/kernel/mm/ksm/run
+  register: ksm_running_result
+  ignore_errors: true
+  changed_when: false
+
+- name: Assert that ksm is disabled in /etc/init.d/boot.local
+  assert:
+    that:
+      - "ksm_running_result.stdout == '0'"
+
+...

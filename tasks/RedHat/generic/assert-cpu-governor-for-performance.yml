@@ -1,0 +1,73 @@
+---
+
+- debug:
+    msg: "imported RedHat/generic/assert-cpu-governor-for-performance.yml"
+
+# can be configured by tuned profile sap-hana, entry "governor=performance"
+#   in included tuned profile throughput-performance
+#- block:
+#    - name: Check if system is able to set CPU Governor for performance
+#      command: bash -lc "LC_ALL=C cpupower frequency-info -g | awk '/available cpufreq governors/{print $(NF-1), $NF}'"
+#      check_mode: no
+#      register: command_check_result
+#      ignore_errors: true
+#      changed_when: false
+
+#    - debug:
+#        var: command_check_result.stdout_lines, command_check_result.stderr_lines
+
+    - name: Check that the CPU Governor for performance is configured
+      block:
+        - name: Get info about file /etc/rc.d/rc.local
+          stat:
+            path: /etc/rc.d/rc.local
+          register: stat_rc_local
+
+        - debug:
+	    var: stat_rc_local
+
+#        - name: Assert that file /etc/rc.d/rc.local exists
+#          assert:
+#            that:
+# file exists
+# mode is 0644
+	    
+        - name: Get the contents of file /etc/rc.d/rc.local (x86_64 platform only)
+          command: grep cpupower /etc/rc.d/rc.local
+          register: grep_rc_local_result
+          changed_when: no
+
+        - name: Assert that CPU Governor for performance is configured at boot time (x86_64 platform only)
+          assert:
+            that:
+              - "grep_rc_local_result.stdout == 'cpupower frequency-set -g performance'"
+
+        - name: Get the current status of the CPU Governor for performance (x86_64 platform only)
+          command: cpupower frequency-info -g
+          register: cpupower_result
+          changed_when: no
+
+        - debug:
+            var: cpupower_result
+  
+        - name: Assert that the current status of the CPU Governor for performance is XXX (x86_64 platform only)
+          assert:
+            that:
+              - "'performance' in cpupower_result.stdout_lines"
+              - "'powersave' not in cpupower_result.stdout_lines"
+
+#      when:
+#       - command_check_result.stdout != 'Not Available'
+
+#    - debug:
+#        msg: "WARN: The system is not able to set CPU Governor for performance!"
+
+#      when:
+#       - command_check_result.stdout "= 'Not Available'
+
+  when:
+    - ansible_architecture == 'x86_64'
+    - ansible_os_family == 'RedHat'
+#    - not sap_hana_preconfigure_assert_use_tuned_where_possible
+
+...

@@ -2,16 +2,57 @@
 # OS RELEASE: RHEL 7
 # SAP Note: 2382421 - Optimizing the Network Configuration on HANA- and OS-Level
 #
-- name: setting kernel tunables as in SAP NOTE 2382421
-  sysctl: 
-    sysctl_file: "{{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}"
-    name: "{{ line_item.name }}"
-    value: "{{ line_item.value }}" 
-    state: present
-    sysctl_set: yes
-    reload: yes
-  with_items: "{{ sap_hana_preconfigure_assert_kernel_parameters }}"
-  loop_control:
-    loop_var: line_item
+- name: Get net.core.somaxconn from {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  command: awk 'BEGIN{FS="="}/net.core.somaxconn/{print $NF}' "{{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}"
+  register: saphana_conf_somaxconn_result
+  changed_when: no
+
+- name: Assert that net.core.somaxconn is set to 4096 in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  assert:
+    that:
+      - saphana_conf_somaxconn.stdout == '4096'
+    fail_msg: "FAIL: The value of 'net.core.somaxconn' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_somaxconn.stdout }} but the expected value is '4096'!"
+    success_msg: "PASS: The value of 'net.core.somaxconn' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is '{{ saphana_conf_somaxconn_result.stdout }}'."
+  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Get net.ipv4.tcp_max_syn_backlog from {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_max_syn_backlog/{print $NF}' "{{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}"
+  register: saphana_conf_max_syn_backlog_result
+  changed_when: no
+
+- name: Assert that net.ipv4.tcp_max_syn_backlog is set to 8192 in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  assert:
+    that:
+      - saphana_conf_max_syn_backlog_result.stdout == '8192'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_max_syn_backlog' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_max_syn_backlog_result.stdout }} but the expected value is '8192'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_max_syn_backlog' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is '{{ saphana_conf_max_syn_backlog_result.stdout }}'."
+  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Get net.ipv4.tcp_timestamps from {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_timestamps/{print $NF}' "{{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}"
+  register: saphana_conf_tcp_timestamps_result
+  changed_when: no
+
+- name: Assert that net.ipv4.tcp_timestamps is set to 1 in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  assert:
+    that:
+      - saphana_conf_tcp_timestamps_result.stdout == '1'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_timestamps' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_tcp_timestamps_result.stdout }} but the expected value is '1'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_timestamps' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is '{{ saphana_conf_tcp_timestamps_result.stdout }}'."
+  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Get net.ipv4.tcp_slow_start_after_idle from {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_slow_start_after_idle/{print $NF}' "{{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}"
+  register: saphana_conf_tcp_slow_start_after_idle_result
+  changed_when: no
+
+- name: Assert that net.ipv4.tcp_slow_start_after_idle is set to 4096 in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }}
+  assert:
+    that:
+      - saphana_conf_tcp_slow_start_after_idle_result.stdout == '0'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_slow_start_after_idle' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is {{ saphana_conf_tcp_slow_start_after_idle_result.stdout }} but the expected value is '0'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_slow_start_after_idle' in {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} is '{{ saphana_conf_tcp_slow_start_after_idle_result.stdout }}'."
+  ignore_errors: "{{ sap_preconfigure_assert_ignore_errors|d(false) }}"
+
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2382421|d(false)
 
