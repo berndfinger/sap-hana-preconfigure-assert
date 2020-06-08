@@ -9,49 +9,135 @@
 ## Configuring your Network for SAP HANA (Ethernet connectivity): 
 ## http://www-03.ibm.com/support/techdocs/atsmastr.nsf/5cb5ed706d254a8186256c71006d2e0a/c32b40501f4f76c886257de0004fa1d4/$FILE/Network_Configuration_for_HANA_Workloads_on_IBM_Power_Servers_V4.pdf
 
-- name: ensure MTU size is 9000 on all interfaces
-  shell: |
-    mtu=$(nmcli conn show {{ line_item }} | grep 802-3-ethernet.mtu | awk -F: '{printf("%d", $2)}')
-    if [ "$mtu" != "9000" ]; then
-       nmcli conn mod {{ line_item }} 802-3-ethernet.mtu "9000"
-       ip link set mtu 9000 dev {{ line_item }}
-    else
-       exit 90
-    fi
-  register: sapnote_2055470_mtusize
-  changed_when: sapnote_2055470_mtusize.rc == 0
-  failed_when: sapnote_2055470_mtusize.rc > 0 and sapnote_2055470_mtusize.rc != 90
-  with_items: "{{ sap_hana_preconfigure_assert_ppcle_mtu9000_if }}"
-  when: not( (sap_hana_preconfigure_assert_ppcle_mtu9000_if) or ( sap_hana_preconfigure_assert_ppcle_mtu9000_if is none) or (sap_hana_preconfigure_assert_ppcle_mtu9000_if | trim == '') )
-  loop_control:
-    loop_var: line_item
+- debug:
+    msg: "WARN: Checking of MTU size==9000 on all interfaces not yet implemented. Please check manually!"
+
+#- name: ensure MTU size is 9000 on all interfaces
+#  shell: |
+#    mtu=$(nmcli conn show {{ line_item }} | grep 802-3-ethernet.mtu | awk -F: '{printf("%d", $2)}')
+#    if [ "$mtu" != "9000" ]; then
+#       nmcli conn mod {{ line_item }} 802-3-ethernet.mtu "9000"
+#       ip link set mtu 9000 dev {{ line_item }}
+#    else
+#       exit 90
+#    fi
+#  register: sapnote_2055470_mtusize
+#  changed_when: sapnote_2055470_mtusize.rc == 0
+#  failed_when: sapnote_2055470_mtusize.rc > 0 and sapnote_2055470_mtusize.rc != 90
+#  with_items: "{{ sap_hana_preconfigure_assert_ppcle_mtu9000_if }}"
+#  when: not( (sap_hana_preconfigure_assert_ppcle_mtu9000_if) or ( sap_hana_preconfigure_assert_ppcle_mtu9000_if is none) or (sap_hana_preconfigure_assert_ppcle_mtu9000_if | trim == '') )
+#  loop_control:
+#    loop_var: line_item
 
 ## This only works if interfacename=device name, otherwise it fails 
-- name: add largesend options to interface
-  lineinfile:
-    regexp: '^ETHTOOL_OPTIONS_tso='
-    line: ETHTOOL_OPTIONS_tso='-K iface tso on'
-    path: /etc/sysconfig/network-scripts/ifcfg-{{ line_item }}
-  with_items: "{{ sap_hana_preconfigure_assert_ppcle_tso_if }}"
-  when: not( (sap_hana_preconfigure_assert_ppcle_tso_if) or ( sap_hana_preconfigure_assert_ppcle_tso_if is none) or (sap_hana_preconfigure_assert_ppcle_tso_if | trim == '') )
-  loop_control:
-    loop_var: line_item
+- debug:
+    msg: "WARN: Checking of largesend options of interface {{ sap_hana_preconfigure_assert_ppcle_tso_if }} not yet implemented. Please check manually!"
+
+#- name: add largesend options to interface
+#  lineinfile:
+#    regexp: '^ETHTOOL_OPTIONS_tso='
+#    line: ETHTOOL_OPTIONS_tso='-K iface tso on'
+#    path: /etc/sysconfig/network-scripts/ifcfg-{{ line_item }}
+#  with_items: "{{ sap_hana_preconfigure_assert_ppcle_tso_if }}"
+#  when: not( (sap_hana_preconfigure_assert_ppcle_tso_if) or ( sap_hana_preconfigure_assert_ppcle_tso_if is none) or (sap_hana_preconfigure_assert_ppcle_tso_if | trim == '') )
+#  loop_control:
+#    loop_var: line_item
   
-- name: add largesend parameter
-  sysctl:
-    sysctl_file: /etc/sysctl.d/ibm_largesend.conf
-    name: "{{ line_item.name }}"
-    value: "{{ line_item.value }}"
-    state: present
-    sysctl_set: yes
-    reload: yes
-  with_items:
-    - { name: net.core.rmem_max, value: 56623104 }
-    - { name: net.core.wmem_max, value: 56623104 }
-    - { name: net.ipv4.tcp_rmem, value: "65536 262088 56623104" }
-    - { name: net.ipv4.tcp_wmem, value: "65536 262088 56623104" }
-    - { name: net.ipv4.tcp_mem, value: "56623104 56623104 56623104" }
-  loop_control:
-    loop_var: line_item
+- name: Get info about file /etc/sysctl.d/ibm_largesend.conf
+  stat:
+    path: /etc/sysctl.d/ibm_largesend.conf
+  register: stat_ibm_largesend_conf
+
+- name: Assert that file /etc/sysctl.d/ibm_largesend.conf exists
+  assert:
+    that: "stat_ibm_largesend_conf.stat.isreg == true"
+    fail_msg: "FAIL: The file /etc/sysctl.d/ibm_largesend.conf does not exist or is no regular file!"
+    success_msg: "PASS: The file /etc/sysctl.d/ibm_largesend.conf exists and is a regular file."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Get net.core.rmem_max from /etc/sysctl.d/ibm_largesend.conf
+  command: awk 'BEGIN{FS="="}/net.core.rmem_max/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
+  register: ibm_largesend_conf_rmem_max_result
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that net.core.rmem_max is set to 4096 in /etc/sysctl.d/ibm_largesend.conf
+  assert:
+    that:
+      - ibm_largesend_conf_rmem_max_result.stdout == '56623104'
+    fail_msg: "FAIL: The value of 'net.core.rmem_max' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_rmem_max_result.stdout }} but the expected value is '56623104'!"
+    success_msg: "PASS: The value of 'net.core.rmem_max' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_rmem_max_result.stdout }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Checking of current value of net.core.rmem_max==4096 not yet implemented. Please check manually!"
+
+- name: Get net.core.wmem_max from /etc/sysctl.d/ibm_largesend.conf
+  command: awk 'BEGIN{FS="="}/net.core.wmem_max/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
+  register: ibm_largesend_conf_wmem_max_result
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that net.core.wmem_max is set to 4096 in /etc/sysctl.d/ibm_largesend.conf
+  assert:
+    that:
+      - ibm_largesend_conf_wmem_max_result.stdout == '56623104'
+    fail_msg: "FAIL: The value of 'net.core.wmem_max' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_wmem_max_result.stdout }} but the expected value is '56623104'!"
+    success_msg: "PASS: The value of 'net.core.wmem_max' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_wmem_max_result.stdout }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Checking of current value of net.core.wmem_max==4096 not yet implemented. Please check manually!"
+
+- name: Get net.ipv4.tcp_rmem from /etc/sysctl.d/ibm_largesend.conf
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_rmem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
+  register: ibm_largesend_conf_tcp_rmem
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that net.ipv4.tcp_rmem is set to '65536 262088 56623104' in /etc/sysctl.d/ibm_largesend.conf
+  assert:
+    that:
+      - ibm_largesend_conf_tcp_rmem.stdout == '65536 262088 56623104'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_rmem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_rmem.stdout }} but the expected value is '65536 262088 56623104'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_rmem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_rmem.stdout }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Checking of current value of net.ipv4.tcp_rmem=='65536 262088 56623104' not yet implemented. Please check manually!"
+
+- name: Get net.ipv4.tcp_wmem from /etc/sysctl.d/ibm_largesend.conf
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_wmem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
+  register: ibm_largesend_conf_tcp_wmem
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that net.ipv4.tcp_wmem is set to '65536 262088 56623104' in /etc/sysctl.d/ibm_largesend.conf
+  assert:
+    that:
+      - ibm_largesend_conf_tcp_wmem.stdout == '65536 262088 56623104'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_wmem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_wmem.stdout }} but the expected value is '65536 262088 56623104'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_wmem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_wmem.stdout }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Checking of current value of net.ipv4.tcp_wmem=='65536 262088 56623104' not yet implemented. Please check manually!"
+
+- name: Get net.ipv4.tcp_mem from /etc/sysctl.d/ibm_largesend.conf
+  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_mem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
+  register: ibm_largesend_conf_tcp_mem
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that net.ipv4.tcp_mem is set to '56623104 56623104 56623104' in /etc/sysctl.d/ibm_largesend.conf
+  assert:
+    that:
+      - ibm_largesend_conf_tcp_mem.stdout == '56623104 56623104 56623104'
+    fail_msg: "FAIL: The value of 'net.ipv4.tcp_mem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_mem.stdout }} but the expected value is '56623104 56623104 56623104'!"
+    success_msg: "PASS: The value of 'net.ipv4.tcp_mem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_mem.stdout }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Checking of current value of net.ipv4.tcp_mem=='56623104 56623104 56623104' not yet implemented. Please check manually!"
 
 ...

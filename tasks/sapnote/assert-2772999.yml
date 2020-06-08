@@ -5,6 +5,18 @@
     - debug:
         msg: "SAP note 2772999 Step 9: Configure Process Resource Limits"
 
+    - name: Get info about file /etc/security/limits.d/99-sap.conf
+      stat:
+        path: /etc/security/limits.d/99-sap.conf
+      register: stat_sap_conf_2
+
+    - name: Assert that file /etc/security/limits.d/99-sap.conf exists
+      assert:
+        that: "stat_sap_conf_2.stat.isreg == true"
+        fail_msg: "FAIL: The file /etc/security/limits.d/99-sap.conf does not exist or is no regular file!"
+        success_msg: "PASS: The file /etc/security/limits.d/99-sap.conf exists and is a regular file."
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
     - name: Get the hard limit of nproc for group sapsys
       command: awk '/sapsys/&&/nproc/&&/hard/{print $NF}' /etc/security/limits.d/99-sap.conf
       register: awk_nofile_hard_result
