@@ -7,6 +7,7 @@
   command: awk 'BEGIN{FS="="}/kernel.pid_max/{print $NF}' /etc/sysctl.d/sap.conf
   register: sap_conf_pidmax_result
   changed_when: no
+  ignore_errors: yes
 
 - name: Assert that kernel.pid_max is set to 4194304 in /etc/sysctl.d/sap.conf
   assert:
@@ -20,6 +21,7 @@
   shell: sysctl kernel.pid_max | awk 'BEGIN{FS="="}/kernel.pid_max/{gsub (" ", ""); print $NF}'
   register: sysctl_max_map_count_result
   changed_when: no
+  ignore_errors: yes
 
 - name: Assert that kernel.pid_max is set to 4194304 as per sysctl
   assert:

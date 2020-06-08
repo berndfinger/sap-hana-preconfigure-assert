@@ -1,6 +1,12 @@
 ---
 # tasks file for sap-hana-preconfigure: configuration
 
+- debug:
+    msg: "SAP note 2772999: RHEL 8 configuration for SAP"
+
+- debug:
+    msg: "sapnote/assert-2772999.yml"
+
 - block:
     - debug:
         msg: "SAP note 2772999 Step 9: Configure Process Resource Limits"
@@ -21,6 +27,7 @@
       command: awk '/sapsys/&&/nproc/&&/hard/{print $NF}' /etc/security/limits.d/99-sap.conf
       register: awk_nofile_hard_result
       changed_when: no
+      ignore_errors: yes
 
     - name: Assert that the hard limit of nproc is unlimited for group sapsys
       assert:
@@ -34,6 +41,7 @@
       command: awk '/sapsys/&&/nproc/&&/soft/{print $NF}' /etc/security/limits.d/99-sap.conf
       register: awk_nofile_soft_result
       changed_when: no
+      ignore_errors: yes
 
     - name: Assert that the soft limit of nproc is unlimited for group sapsys
       assert:

@@ -1,12 +1,13 @@
 ---
 
 - debug:
-    msg: "imported RedHat/generic/disable-coredumps.yml"
+    msg: "imported RedHat/generic/assert-coredumps.yml"
 
 - name: Check if the hard limit of core file creation is 0 for all users
   command: awk '$1=="*"&&/core/&&/hard/{print $NF}' /etc/security/limits.d/99-sap.conf
   register: awk_corefile_hard_result
   changed_when: no
+  ignore_errors: yes
 
 - name: Assert that the hard limit of core file creation is 0 for all users
   assert:
@@ -20,6 +21,7 @@
   command: awk '$1=="*"&&/core/&&/soft/{print $NF}' /etc/security/limits.d/99-sap.conf
   register: awk_corefile_soft_result
   changed_when: no
+  ignore_errors: yes
 
 - name: Assert that the soft limit of core file creation is 0 for all users
   assert:

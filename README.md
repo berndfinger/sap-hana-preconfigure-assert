@@ -69,6 +69,12 @@ Role Variables
 
 - set in `defaults/main.yml`:
 
+### Ignore assert errors
+If the following variable is set to `yes`, the role will not fail in case of any assert errors. Default is `no`, meaning that the role will fail on each assertion error.
+```yaml
+sap_hana_preconfigure_assert_ignore_errors: yes
+```
+
 ### Execute only certain steps of SAP notes
 If the following variable is set to no, only certain steps of SAP notes will be executed or checked as per setting of variable `sap_hana_preconfigure_assert_<sap_note_number>_<step>`. If this variable is undefined or set to no, all installation and configuration steps of applicable SAP notes will be executed.
 ```yaml
@@ -173,47 +179,19 @@ sap_hana_preconfigure_assert_kernel_parameters:
 Example Playbook
 ----------------
 
-Here is an example playbook that prepares a server for hana installation.
-
-```yaml
----
-- hosts: hana
-  remote_user: root
-
-  vars:
-      # subscribe-rhn role variables
-      reg_activation_key: myregistration
-      reg_organization_id: 123456
-
-      repositories:
-          - rhel-7-server-rpms
-          - rhel-sap-hana-for-rhel-7-server-rpms
-
-          # If you want to use 4 years update services, use:
-          #       - rhel-7-server-e4s-rpms
-          #       - rhel-sap-hana-for-rhel-7-server-e4s-rpms
-
-          # If you want to use 2 years extend updates, use:
-          #       - rhel-7-server-eus-rpms
-          #       - rhel-sap-hana-for-rhel-7-server-eus-rpms
-
-
-          # rhel-system-roles.timesync variables
-
-  roles:
-        - { role: redhat_sap.sap_rhsm }
-        - { role: linux-system-roles.sap-base-settings }
-        - { role: linux-system-roles.sap-hana-preconfigure }
-```
-
 Here is a simple playbook:
 
 ```yaml
 ---
     - hosts: all
       roles:
-         - role: sap-preconfigure
-         - role: sap-hana-preconfigure
+         - role: sap-preconfigure-assert
+         - role: sap-hana-preconfigure-assert
+```
+
+Here is a useful command for only showing only FAIL:, WARN:, PASS: messages
+```yaml
+ansible-playbook -l remote_host sap-hana-assert.yml | awk '/FAIL:/||/WARN:/||/PASS:/{sub ("    \"msg\": ", ""); print}'
 ```
 
 Contribution

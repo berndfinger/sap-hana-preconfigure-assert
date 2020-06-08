@@ -7,6 +7,12 @@
 # We include the release specific stuff here
 #
 
+- debug:
+    msg: "SAP note 2009879: Recommended RHEL settings for SAP HANA (pdf)"
+
+- debug:
+    msg: "sapnote/assert-2009879.yml"
+
 # Todo: move repo checking to RedHat/installion.yml
 # Disable for now, as there is no support for ppc64le
 #- name: Check for EUS or E4S repository

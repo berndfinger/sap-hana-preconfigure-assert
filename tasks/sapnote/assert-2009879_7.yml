@@ -9,6 +9,12 @@
 # See comments
 #
 
+- debug:
+    msg: "SAP note 2009879: Recommended RHEL 7 settings for SAP HANA (pdf)"
+
+- debug:
+    msg: "sapnote/assert-2009879_7.yml"
+
 ### 3.1 - Basic OS installation is a prerequisite
 ### 3.2 - Additional Package installation is done in the installation.yml file
 ### 3.3 - Hostname - is an SAP generic setting, already done with SAP Note 2002167 (sap-preconfigure) 
