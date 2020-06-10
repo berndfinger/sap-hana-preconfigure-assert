@@ -1,0 +1,45 @@
+---
+
+# tasks file for sap-hana-preconfigure: configuration
+
+- debug:
+    msg: "no SAP note - kernel parameter checks"
+
+- debug:
+    msg: "RedHat_8/parameter-checks.yml"
+
+- name: Get and assert kernel tunables
+  include_tasks: parameter-loop-block.yml
+  loop: "{{ __sap_hana_preconfigure_assert_kernel_parameters_check }}"
+  loop_control:
+    loop_var: line_item
+  
+- name: Get CPU DMA latency
+  shell: echo $(( 0x$(hexdump -C /dev/cpu_dma_latency | awk 'BEGIN{FS="|"}NR==1{print $1}' | awk '{printf ("%2s%2s%2s%2s\n", $5, $4, $3, $2)}') ))
+  register: cpu_dma_latency_result
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that CPU DMS latency is 70 ms
+  assert:
+    that:
+      - cpu_dma_latency_result.stdout == '70'
+    fail_msg: "FAIL: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }} but the expected value is '70'!"
+    success_msg: "PASS: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }}."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Get readahead values from /sys/block/*/queue/read_ahead_kb
+  shell: grep . /sys/block/*/queue/read_ahead_kb | awk 'BEGIN{FS=":"}{print $NF}' | sort | uniq
+  register: readahead_result
+  changed_when: no
+  ignore_errors: yes
+
+- name: Assert that readahead for all devices is set to 128 (kB)
+  assert:
+    that:
+      - readahead_result.stdout == '128'
+    fail_msg: "FAIL: The readahead value for all disks is {{ readahead_result.stdout }} but the expected value is '128'!"
+    success_msg: "PASS: The readahead value for all disks is {{ readahead_result.stdout }}."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+...

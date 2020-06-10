@@ -112,4 +112,16 @@ __sap_hana_preconfigure_assert_kernel_parameters_default:
 # So we do not change the default.
 #  - { name: net.ipv4.tcp_syn_retries, value: 8 }
 
+__sap_hana_preconfigure_assert_kernel_parameters_check:
+# The following parameters have been identified for ensuring best performance during the HANA for RHEL 8 validation:
+  - { name: kernel.sem, value: '32000 1024000000 500 32000' }
+  - { name: kernel.numa_balancing, value: '0' }
+  - { name: vm.max_map_count, value: '2147483647' }
+  - { name: kernel.pid_max, value: '4194304' }
+  - { name: vm.dirty_ratio, value: '40' }
+  - { name: vm.dirty_background_ratio, value: '10' }
+  - { name: kernel.sched_min_granularity_ns, value: '3000000' }
+  - { name: kernel.sched_wakeup_granularity_ns, value: '4000000' }
+  - { name: kernel.sched_migration_cost_ns, value: '500000' }
+
 ...

@@ -17,4 +17,6 @@
      
 - include: "{{ './' + ansible_distribution + '_' + ansible_distribution_major_version + '/recommendations.yml' }}"
 
+- include: "{{ './' + ansible_distribution + '_' + ansible_distribution_major_version + '/parameter-checks.yml' }}"
+
 ...
