@@ -70,7 +70,7 @@
 - debug:
     msg: "WARN: Package group check not implemented. Please check manually!"
 
-- name: Check if required packages are installed
+- name: Get info about required packages
   shell: yum info installed {{ __sap_hana_preconfigure_assert_packages | map('quote') | join(' ') }} | awk '/Name/{n=$NF}/Version/{v=$NF}/Release/{r=$NF}/Description/{printf ("%s\n", n)}'
   register: yum_result
   changed_when: no
@@ -89,9 +89,6 @@
     loop_var: line_item
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-- debug:
-    msg: "WARN: Minimum package check not implemented. Please check manually!"
-
 ### If this task fails, you need to enable the IBM PowerTools repository
 ### see https://www14.software.ibm.com/support/customercare/sas/f/lopdiags/home.html for details
 ##
@@ -99,11 +96,27 @@
 ### # /opt/ibm/lop/configure
 ### # yum -y install ibm-power-managed-rhel7
 ###
-#- name: Install IBM Tools 
-#  package:
-#    state: latest
-#    name: "{{ __sap_hana_preconfigure_assert_required_ppc64le }}"
-#  when: ansible_architecture == "ppc64le" 
+- name: Assert that all required IBM packages are installed
+  assert:
+    that:
+      - "'{{ line_item }}' in yum_result.stdout_lines"
+    fail_msg: "FAIL: Package '{{ line_item }}' is not installed!"
+    success_msg: "PASS: Package '{{ line_item }}' is installed."
+  with_items:
+    - "{{ __sap_hana_preconfigure_assert_required_ppc64le }}"
+  loop_control:
+    loop_var: line_item
+  when: ansible_architecture == "ppc64le" 
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- debug:
+    msg: "WARN: Minimum package check not yet implented. Please check manually!"
+
+- set_fact:
+    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
+
+- debug:
+    var: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 
 #- name: Ensure minimum packages are installed
 #  block:
@@ -115,12 +128,15 @@
 #        if [ $newest == $required_pkg ]; then
 #           echo $newest
 #        fi
-#      loop: "{{ sap_hana_preconfigure_assert_min_pkgs }}"
+#      loop: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 #      loop_control:
 #        loop_var: pkg
-#      check_mode: no
 #      register: sap_hana_preconfigure_assert_register_minpkglist
 #      changed_when: false
+
+# There might be an issue with the version comparison:
+# echo -e "kernel-3.10.0-1062.1.1.el7.x86_64\n$(rpm -q kernel)" | sort -V | tail 1
+# is showing kernel-3.10.0-1062.el7.x86_64 and not the latest one, which is kernel-3.10.0-1062.1.1.el7.x86_64
 
 #    - name: Initialize an empty list for our strings
 #      set_fact:
@@ -132,7 +148,10 @@
 #      loop: "{{ sap_hana_preconfigure_assert_register_minpkglist.results }}"
 #      loop_control:
 #        loop_var: pkg
-#    - debug: var=sap_hana_preconfigure_assert_fact_minpkglist
+
+#    - debug:
+#        var: sap_hana_preconfigure_assert_fact_minpkglist
+
 
 #    - name: Install minimum packages if required
 #      yum:
@@ -142,7 +161,7 @@
 
 #  when: 
 #    - sap_hana_preconfigure_assert_min_package_check|bool
-#    - not( (sap_hana_preconfigure_assert_min_pkgs is undefined) or (sap_hana_preconfigure_assert_min_pkgs is none) or (sap_hana_preconfigure_assert_min_pkgs | trim == '') ) 
+#    - not( (__sap_hana_preconfigure_assert_min_pkgs is undefined) or (__sap_hana_preconfigure_assert_min_pkgs is none) or (__sap_hana_preconfigure_assert_min_pkgs | trim == '') ) 
 
 - set_fact:
     needs_restarting_command: "needs-restarting -r"
@@ -163,6 +182,14 @@
   args:
     warn: false
   check_mode: false
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+
+- name: Assert that system needs no restart
+  assert:
+    that:
+      - needs_restarting_result.rc == 0
+    fail_msg: "FAIL: System needs to be restarted!"
+    success_msg: "PASS: System needs no restart."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...

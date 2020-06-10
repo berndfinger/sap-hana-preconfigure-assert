@@ -50,8 +50,19 @@ __sap_hana_preconfigure_assert_required_ppc64le:
   - ppc64-diag
   - IBMinvscout
 
-# Minimum required package levels for RHEL 8:
-__sap_hana_preconfigure_assert_min_packages_8:
+# Minimum required package levels for RHEL 8.0:
+__sap_hana_preconfigure_assert_min_packages_8_0:
+
+# Minimum required package levels for RHEL 8.1:
+__sap_hana_preconfigure_assert_min_packages_8_1:
+
+# Minimum required package levels for RHEL 8.2:
+__sap_hana_preconfigure_assert_min_packages_8_2:
+
+# Minimum required package levels for RHEL 8.3:
+__sap_hana_preconfigure_assert_min_packages_8_3:
+
+__sap_hana_preconfigure_assert_min_pkgs: "{{ lookup('vars','__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|string|replace (\".\", \"_\") ) }}"
 
 __sap_hana_preconfigure_assert_packages:
 # SAP NOTE 2772999:
