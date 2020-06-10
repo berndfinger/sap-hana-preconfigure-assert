@@ -95,7 +95,7 @@ __sap_hana_preconfigure_assert_packages:
   - tuned-profiles-sap-hana
 
 __sap_hana_preconfigure_assert_packagegroups: 
-  - "@base"
+  - "@Server"
 
 # Network related kernel parameters as per SAP Note 2382421:
 __sap_hana_preconfigure_assert_kernel_parameters_default:
