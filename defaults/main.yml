@@ -30,6 +30,7 @@ sap_hana_preconfigure_assert_ignore_errors: yes
 #sap_hana_preconfigure_assert_2772999_09: yes
 ## both:
 #sap_hana_preconfigure_assert_2382421: yes
+#sap_hana_preconfigure_assert_2055470: yes
 
 # Set to "no" if you do want the role to check if SAP HANA repos have been enabled. The default is "yes".
 sap_hana_preconfigure_assert_enable_sap_hana_repos: yes

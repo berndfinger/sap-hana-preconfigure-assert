@@ -86,7 +86,7 @@ __sap_hana_preconfigure_assert_packages:
 __sap_hana_preconfigure_assert_packagegroups: 
   - "@base"
 
-# Network related kernel parameters as set in SAP Note 2382421:
+# Network related kernel parameters as per SAP Note 2382421:
 __sap_hana_preconfigure_assert_kernel_parameters_default:
 # The following two parameter should always be set:
   - { name: net.core.somaxconn, value: 4096 }
@@ -111,6 +111,14 @@ __sap_hana_preconfigure_assert_kernel_parameters_default:
 # The following only applies to HANA 1 <= 122.14 and HANA 2 SPS00.
 # So we do not change the default.
 #  - { name: net.ipv4.tcp_syn_retries, value: 8 }
+
+# Network related kernel parameters for ppc64le as per SAP Note 2055470:
+__sap_hana_preconfigure_assert_kernel_parameters_default_ppc64le:
+  - { name: net.core.rmem_max, value: '56623104' }
+  - { name: net.core.wmem_max, value: '56623104' }
+  - { name: net.ipv4.tcp_rmem, value: '65536 262088 56623104' }
+  - { name: net.ipv4.tcp_wmem, value: '65536 262088 56623104' }
+  - { name: net.ipv4.tcp_mem, value: '56623104 56623104 56623104' }
 
 __sap_hana_preconfigure_assert_kernel_parameters_check:
 # The following parameters have been identified for ensuring best performance during the HANA for RHEL 8 validation:

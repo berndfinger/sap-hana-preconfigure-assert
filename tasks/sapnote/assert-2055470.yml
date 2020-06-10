@@ -49,166 +49,26 @@
 #  loop_control:
 #    loop_var: line_item
   
-- name: Get info about file /etc/sysctl.d/ibm_largesend.conf
-  stat:
-    path: /etc/sysctl.d/ibm_largesend.conf
-  register: stat_ibm_largesend_conf
+- block:
+  - name: Get info about file /etc/sysctl.d/ibm_largesend.conf
+    stat:
+      path: /etc/sysctl.d/ibm_largesend.conf
+    register: stat_ibm_largesend_conf
 
-- name: Assert that file /etc/sysctl.d/ibm_largesend.conf exists
-  assert:
-    that: "stat_ibm_largesend_conf.stat.isreg == true"
-    fail_msg: "FAIL: The file /etc/sysctl.d/ibm_largesend.conf does not exist or is no regular file!"
-    success_msg: "PASS: The file /etc/sysctl.d/ibm_largesend.conf exists and is a regular file."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+  - name: Assert that file /etc/sysctl.d/ibm_largesend.conf exists
+    assert:
+      that: "stat_ibm_largesend_conf.stat.isreg == true"
+      fail_msg: "FAIL: The file /etc/sysctl.d/ibm_largesend.conf does not exist or is no regular file!"
+      success_msg: "PASS: The file /etc/sysctl.d/ibm_largesend.conf exists and is a regular file."
+    ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-# net.core.rmem_max
+  when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2055470|d(false)
 
-- name: Get net.core.rmem_max from /etc/sysctl.d/ibm_largesend.conf
-  command: awk 'BEGIN{FS="="}/net.core.rmem_max/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
-  register: ibm_largesend_conf_rmem_max_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.core.rmem_max is set to '56623104' in /etc/sysctl.d/ibm_largesend.conf
-  assert:
-    that:
-      - ibm_largesend_conf_rmem_max_result.stdout == '56623104'
-    fail_msg: "FAIL: The value of 'net.core.rmem_max' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_rmem_max_result.stdout }} but the expected value is '56623104'!"
-    success_msg: "PASS: The value of 'net.core.rmem_max' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_rmem_max_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-- name: Check if net.core.rmem_max is set to '56623104' as per sysctl
-  shell: sysctl net.core.rmem_max | awk 'BEGIN{FS="="}/net.core.rmem_max/{gsub (" ", ""); print $NF}'
-  register: sysctl_rmem_max_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.core.rmem_max is set to '56623104' as per sysctl
-  assert:
-    that:
-      - sysctl_rmem_max_result.stdout == '56623104'
-    fail_msg: "FAIL: The current value of 'net.core.rmem_max' as per sysctl is '{{ sysctl_rmem_max_result.stdout }}' but the expected value is '56623104'!"
-    success_msg: "PASS: The current value of 'net.core.rmem_max' as per sysctl is '{{ sysctl_rmem_max_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-# net.core.wmem_max
-
-- name: Get net.core.wmem_max from /etc/sysctl.d/ibm_largesend.conf
-  command: awk 'BEGIN{FS="="}/net.core.wmem_max/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
-  register: ibm_largesend_conf_wmem_max_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.core.wmem_max is set to '56623104' in /etc/sysctl.d/ibm_largesend.conf
-  assert:
-    that:
-      - ibm_largesend_conf_wmem_max_result.stdout == '56623104'
-    fail_msg: "FAIL: The value of 'net.core.wmem_max' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_wmem_max_result.stdout }} but the expected value is '56623104'!"
-    success_msg: "PASS: The value of 'net.core.wmem_max' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_wmem_max_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-- name: Check if net.core.wmem_max is set to '56623104' as per sysctl
-  shell: sysctl net.core.wmem_max | awk 'BEGIN{FS="="}/net.core.wmem_max/{gsub (" ", ""); print $NF}'
-  register: sysctl_wmem_max_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.core.wmem_max is set to '56623104' as per sysctl
-  assert:
-    that:
-      - sysctl_wmem_max_result.stdout == '56623104'
-    fail_msg: "FAIL: The current value of 'net.core.wmem_max' as per sysctl is '{{ sysctl_wmem_max_result.stdout }}' but the expected value is '56623104'!"
-    success_msg: "PASS: The current value of 'net.core.wmem_max' as per sysctl is '{{ sysctl_wmem_max_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-# net.ipv4.tcp_rmem
-
-- name: Get net.ipv4.tcp_rmem from /etc/sysctl.d/ibm_largesend.conf
-  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_rmem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
-  register: ibm_largesend_conf_tcp_rmem
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_rmem is set to '65536 262088 56623104' in /etc/sysctl.d/ibm_largesend.conf
-  assert:
-    that:
-      - ibm_largesend_conf_tcp_rmem.stdout == '65536 262088 56623104'
-    fail_msg: "FAIL: The value of 'net.ipv4.tcp_rmem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_rmem.stdout }} but the expected value is '65536 262088 56623104'!"
-    success_msg: "PASS: The value of 'net.ipv4.tcp_rmem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_rmem.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-- name: Check if net.ipv4.tcp_rmem is set to '65536 262088 56623104' as per sysctl
-  shell: sysctl net.ipv4.tcp_rmem | awk 'BEGIN{FS="="}/net.ipv4.tcp_rmem/{gsub (" ", ""); print $NF}'
-  register: sysctl_tcp_rmem_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_rmem is set to '65536 262088 56623104' as per sysctl
-  assert:
-    that:
-      - sysctl_tcp_rmem_result.stdout == '65536 262088 56623104'
-    fail_msg: "FAIL: The current value of 'net.ipv4.tcp_rmem' as per sysctl is '{{ sysctl_tcp_rmem_result.stdout }}' but the expected value is '65536 262088 56623104'!"
-    success_msg: "PASS: The current value of 'net.ipv4.tcp_rmem' as per sysctl is '{{ sysctl_tcp_rmem_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-# net.ipv4.tcp_wmem
-
-- name: Get net.ipv4.tcp_wmem from /etc/sysctl.d/ibm_largesend.conf
-  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_wmem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
-  register: ibm_largesend_conf_tcp_wmem
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_wmem is set to '65536 262088 56623104' in /etc/sysctl.d/ibm_largesend.conf
-  assert:
-    that:
-      - ibm_largesend_conf_tcp_wmem.stdout == '65536 262088 56623104'
-    fail_msg: "FAIL: The value of 'net.ipv4.tcp_wmem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_wmem.stdout }} but the expected value is '65536 262088 56623104'!"
-    success_msg: "PASS: The value of 'net.ipv4.tcp_wmem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_wmem.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-- name: Check if net.ipv4.tcp_wmem is set to '65536 262088 56623104' as per sysctl
-  shell: sysctl net.ipv4.tcp_wmem | awk 'BEGIN{FS="="}/net.ipv4.tcp_wmem/{gsub (" ", ""); print $NF}'
-  register: sysctl_tcp_wmem_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_wmem is set to '65536 262088 56623104' as per sysctl
-  assert:
-    that:
-      - sysctl_tcp_wmem_result.stdout == '65536 262088 56623104'
-    fail_msg: "FAIL: The current value of 'net.ipv4.tcp_wmem' as per sysctl is '{{ sysctl_tcp_wmem_result.stdout }}' but the expected value is '65536 262088 56623104'!"
-    success_msg: "PASS: The current value of 'net.ipv4.tcp_wmem' as per sysctl is '{{ sysctl_tcp_wmem_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-# net.ipv4.tcp_mem
-
-- name: Get net.ipv4.tcp_mem from /etc/sysctl.d/ibm_largesend.conf
-  command: awk 'BEGIN{FS="="}/net.ipv4.tcp_mem/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
-  register: ibm_largesend_conf_tcp_mem
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_mem is set to '56623104 56623104 56623104' in /etc/sysctl.d/ibm_largesend.conf
-  assert:
-    that:
-      - ibm_largesend_conf_tcp_mem.stdout == '56623104 56623104 56623104'
-    fail_msg: "FAIL: The value of 'net.ipv4.tcp_mem' in /etc/sysctl.d/ibm_largesend.conf is {{ ibm_largesend_conf_tcp_mem.stdout }} but the expected value is '56623104 56623104 56623104'!"
-    success_msg: "PASS: The value of 'net.ipv4.tcp_mem' in /etc/sysctl.d/ibm_largesend.conf is '{{ ibm_largesend_conf_tcp_mem.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
-- name: Check if net.ipv4.tcp_mem is set to '56623104 56623104 56623104' as per sysctl
-  shell: sysctl net.ipv4.tcp_mem | awk 'BEGIN{FS="="}/net.ipv4.tcp_mem/{gsub (" ", ""); print $NF}'
-  register: sysctl_tcp_mem_result
-  changed_when: no
-  ignore_errors: yes
-
-- name: Assert that net.ipv4.tcp_mem is set to '56623104 56623104 56623104' as per sysctl
-  assert:
-    that:
-      - sysctl_tcp_mem_result.stdout == '56623104 56623104 56623104'
-    fail_msg: "FAIL: The current value of 'net.ipv4.tcp_mem' as per sysctl is '{{ sysctl_tcp_mem_result.stdout }}' but the expected value is '56623104 56623104 56623104'!"
-    success_msg: "PASS: The current value of 'net.ipv4.tcp_mem' as per sysctl is '{{ sysctl_tcp_mem_result.stdout }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
+- name: Get and assert kernel tunables for ppc64le
+  include_tasks: ../RedHat/generic/sapnote-2055470-loop-block.yml
+  loop: "{{ __sap_hana_preconfigure_assert_kernel_parameters_default_ppc64le }}"
+  loop_control:
+    loop_var: line_item
+  when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2055470|d(false)
 
 ...

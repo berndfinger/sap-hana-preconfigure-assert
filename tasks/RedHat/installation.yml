@@ -22,28 +22,31 @@
 
 #  when: sap_hana_preconfigure_assert_enable_sap_hana_repos
 
-#- debug:
-#    msg: "WARN: Check of required repos not implemented. Please check manually!"
+- debug:
+    msg: "WARN: Check of required repos not implemented. Please check manually!"
 
-#- name: Ensure that the RHEL minor relase is fixed
-#  rhsm_release:
-#    release: "{{ ansible_distribution_version }}"
-
-- name: Detect if the minor RHEL release is set
-  shell: subscription-manager release --show | awk '{print $NF}'
+- name: Detect if and how the minor RHEL release is set
+  shell: subscription-manager release | awk 'NF==2{printf $NF}NF!=2{print}'
   register: subscription_manager_release_result
-  changed_when: false
-  when:
-    - sap_hana_preconfigure_assert_set_minor_release
+  changed_when: no
+  ignore_errors: yes
+
+- debug:
+    var: subscription_manager_release_result
+
+- name: Assert that the RHEL version is locked correctly
+  assert:
+    that:
+      - subscription_manager_release_result.stdout == '{{ ansible_distribution_version }}'
+    fail_msg: "FAIL: The RHEL release lock status is '{{ subscription_manager_release_result.stdout }}' but the expected value is '{{ ansible_distribution_version }}'!"
+    success_msg: "PASS: The RHEL release is correctly locked to '{{ ansible_distribution_version }}'."
+  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 #- name: Set the minor RHEL release
 #  shell: subscription-manager release --set="{{ ansible_distribution_version }}"
 #  when:
 #    - sap_hana_preconfigure_assert_set_minor_release
 #    - subscription_manager_release_result.stdout != ansible_distribution_version
-
-- debug:
-    msg: "WARN: Check of version lock not implemented. Please check manually!"
 
 - name: Get info about outstanding package updates
   command: yum check-update

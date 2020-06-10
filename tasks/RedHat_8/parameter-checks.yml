@@ -3,7 +3,7 @@
 # tasks file for sap-hana-preconfigure: configuration
 
 - debug:
-    msg: "no SAP note - kernel parameter checks"
+    msg: "no SAP note - further kernel parameter checks"
 
 - debug:
     msg: "RedHat_8/parameter-checks.yml"
@@ -38,8 +38,8 @@
   assert:
     that:
       - readahead_result.stdout == '128'
-    fail_msg: "FAIL: The readahead value for all disks is {{ readahead_result.stdout }} but the expected value is '128'!"
-    success_msg: "PASS: The readahead value for all disks is {{ readahead_result.stdout }}."
+    fail_msg: "FAIL: The readahead value for all disks is '{{ readahead_result.stdout }}' but the expected value is '128'!"
+    success_msg: "PASS: The readahead value for all disks is '{{ readahead_result.stdout }}'."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...
