@@ -136,13 +136,51 @@
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - debug:
-    msg: "WARN: Minimum package check not yet implented. Please check manually!"
+    msg: "WARN: Minimum package check currently under development. Please check manually!"
 
-- set_fact:
-    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
+- name: Gather package facts
+  package_facts:
+
+#- set_fact:
+#    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
 
 - debug:
     var: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
+
+- set_fact: 
+    reqpkgs: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
+
+- debug:
+    var: reqpkgs
+
+- set_fact: 
+    curpkgs: "{{ ansible_facts.packages }}"
+
+#- debug:
+#    var: curpkgs
+
+- set_fact:
+    pkgs_to_install_update: |-
+      {% set ns = namespace() %}
+      {% set ns.pkgs = [] %}
+      {% for reqpkg in reqpkgs %}
+      {%   if not reqpkg[0] in curpkgs %}
+      {%     set _ = ns.pkgs.append(reqpkg | join('-')) %}
+      {%   else %}
+      {%     set pkg = curpkgs[reqpkg[0]][-1] %}
+      {%     set verrel = pkg.version ~ '-' ~ pkg.release %}
+      {%     if reqpkg[1] is version(verrel, '>') %}
+      {%       set _ = ns.pkgs.append(reqpkg | join('-')) %}
+      {%     else %}
+      {%       set _ = "pkg already installed with same or later version" %}
+      {%     endif %}
+      {%   endif %}
+      {% endfor %}
+      {{ ns.pkgs }}
+  debugger: on_failed
+
+- debug:
+    var: pkgs_to_install_update
 
 #- name: Ensure minimum packages are installed
 #  block:
