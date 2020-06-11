@@ -2,7 +2,7 @@
 
 # loop block for parameter-checks.yml
 - name: Get kernel tunable
-  shell: sysctl -n {{ line_item.name }} | awk '{gsub (" ", " "); print}'
+  shell: sysctl -n {{ line_item.name }} | awk '{gsub ("\t", " "); print}'
   register: sysctl_result
   changed_when: no
   ignore_errors: yes
