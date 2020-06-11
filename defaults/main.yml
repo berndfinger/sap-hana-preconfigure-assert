@@ -41,33 +41,6 @@ sap_hana_preconfigure_assert_req_repos_RedHat_7_ppc64le: "{{ __sap_hana_preconfi
 sap_hana_preconfigure_assert_req_repos_RedHat_8_x86_64: "{{ __sap_hana_preconfigure_assert_req_repos_RedHat_8_x86_64 }}"
 sap_hana_preconfigure_assert_req_repos_RedHat_8_ppc64le: "{{ __sap_hana_preconfigure_assert_req_repos_RedHat_8_ppc64le }}"
 
-# Set to "yes" if you want the role to check if the RHEL minor release is set. Default is "yes".
-sap_hana_preconfigure_assert_set_minor_release: yes
-
-# HANA Major and minor version
-# These variables are used in other SAP HANA related roles, e.g. sap-hana-mediacheck.
-sap_hana_version: "2" 
-sap_hana_sps: "0"
-
-# SAP HANA requires minimum packages installed to be supported. These min levels are listed in SAP Note 2235581
-# Set to no if you want to ignore these requirements.
-sap_hana_preconfigure_assert_min_package_check: yes
-
-# Set the following variable to "yes" if you want to run "yum update" during the installation part.
-sap_hana_preconfigure_assert_update: yes
-
-###
-#
-# The following variables are optional.
-# If they are defined, the users sapadm and sapsys will already be created
-# This is necessary for installation of hostagent, but some customers require it at an earlier stage.
-#
-# sap_sapadm_uid:
-# sap_sapadm_pw_clear:
-# sap_sapsys_gid:
-# sap_hana_id_group_sapsys: not yet used
-# sap_hana_id_user_sapadm: not yet used
-
 ##  HANA kernel parameters
 # [SAP Note 238241](https://launchpad.support.sap.com/#/notes/238241) defines kernel parameters that all Linux systems need to set.
 # The default parameter recomendations are dependent on the OS release. Hence the OS dependant default setting is defined in
@@ -84,14 +57,6 @@ sap_hana_preconfigure_assert_ppcle_mtu9000_if: ''
 ## list where tso flag should be set 
 ## defaults to all interfaces
 sap_hana_preconfigure_assert_ppcle_tso_if: "{{ ansible_interfaces| difference(['lo']) }}"
-
-sap_hana_preconfigure_assert_switch_to_tuned_profile_sap_hana: yes
-
-sap_hana_preconfigure_assert_use_tuned_where_possible: yes
-
-sap_hana_preconfigure_assert_modify_grub_cmdline_linux: yes
-
-sap_hana_preconfigure_assert_run_grub2_mkconfig: yes
 
 # Use the following variable to specify the name of the RHEL group which is used for the database processes
 # (if it exists, it will be used to configure process limits as per step

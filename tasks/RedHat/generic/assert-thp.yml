@@ -20,7 +20,7 @@
 
   when:
     - ansible_os_family == 'RedHat'
-    - sap_hana_preconfigure_assert_modify_grub_cmdline_linux
-    - not sap_hana_preconfigure_assert_use_tuned_where_possible
+#    - sap_hana_preconfigure_assert_modify_grub_cmdline_linux
+#    - not sap_hana_preconfigure_assert_use_tuned_where_possible
 
 ...

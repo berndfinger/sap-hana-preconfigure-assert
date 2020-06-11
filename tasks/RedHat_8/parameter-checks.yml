@@ -24,8 +24,8 @@
   assert:
     that:
       - cpu_dma_latency_result.stdout == '70'
-    fail_msg: "FAIL: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }} but the expected value is '70'!"
-    success_msg: "PASS: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }}."
+    fail_msg: "FAIL: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }} (ms) but the expected value is '70' (ms)!"
+    success_msg: "PASS: The CPU DMA latency is {{ cpu_dma_latency_result.stdout }} (ms)."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - name: Get readahead values from /sys/block/*/queue/read_ahead_kb

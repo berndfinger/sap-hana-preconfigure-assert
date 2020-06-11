@@ -143,9 +143,6 @@
 #- set_fact:
 #    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
 
-#- debug:
-#    var: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
-
   - set_fact: 
       reqpkgs: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 

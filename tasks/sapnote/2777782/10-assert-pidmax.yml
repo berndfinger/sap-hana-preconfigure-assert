@@ -5,30 +5,31 @@
 
 - name: Check if kernel.pid_max is set to 4194304 in /etc/sysctl.d/sap.conf
   command: awk 'BEGIN{FS="="}/kernel.pid_max/{print $NF}' /etc/sysctl.d/sap.conf
-  register: sap_conf_pidmax_result
+  register: sap_conf_pid_max_result
   changed_when: no
   ignore_errors: yes
 
 - name: Assert that kernel.pid_max is set to 4194304 in /etc/sysctl.d/sap.conf
   assert:
     that:
-      - sap_conf_pidmax_result.stdout == '4194304'
-    fail_msg: "FAIL: The value of 'kernel.pid_max' in /etc/sysctl.d/sap.conf is {{ sap_conf_pidmax_result.stdout }} but the expected value is '4194304'!"
-    success_msg: "PASS: The value of 'kernel.pid_max' in /etc/sysctl.d/sap.conf is '{{ sap_conf_pidmax_result.stdout }}'."
+      - sap_conf_pid_max_result.stdout == '4194304'
+    fail_msg: "FAIL: The value of 'kernel.pid_max' in /etc/sysctl.d/sap.conf is {{ sap_conf_pid_max_result.stdout }} but the expected value is '4194304'!"
+    success_msg: "PASS: The value of 'kernel.pid_max' in /etc/sysctl.d/sap.conf is '{{ sap_conf_pid_max_result.stdout }}'."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - name: Check if kernel.pid_max is set to 4194304 as per sysctl
-  shell: sysctl kernel.pid_max | awk 'BEGIN{FS="="}/kernel.pid_max/{gsub (" ", ""); print $NF}'
-  register: sysctl_max_map_count_result
+#  shell: sysctl kernel.pid_max | awk 'BEGIN{FS="="}/kernel.pid_max/{gsub (" ", ""); print $NF}'
+  shell: sysctl -n kernel.pid_max
+  register: sysctl_pid_max_result
   changed_when: no
   ignore_errors: yes
 
 - name: Assert that kernel.pid_max is set to 4194304 as per sysctl
   assert:
     that:
-      - sysctl_max_map_count_result.stdout == '4194304'
-    fail_msg: "FAIL: The current value of 'kernel.pid_max' as per sysctl is '{{ sysctl_max_map_count_result.stdout }}' but the expected value is '4194304'!"
-    success_msg: "PASS: The current value of 'kernel.pid_max' as per sysctl is '{{ sysctl_max_map_count_result.stdout }}'."
+      - sysctl_pid_max_result.stdout == '4194304'
+    fail_msg: "FAIL: The current value of 'kernel.pid_max' as per sysctl is '{{ sysctl_pid_max_result.stdout }}' but the expected value is '4194304'!"
+    success_msg: "PASS: The current value of 'kernel.pid_max' as per sysctl is '{{ sysctl_pid_max_result.stdout }}'."
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 ...

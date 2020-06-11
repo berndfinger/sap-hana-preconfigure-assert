@@ -19,50 +19,8 @@ __sap_hana_preconfigure_assert_sapnotes:
   - "2382421"
 #  - "2235581" # no specific requirements for RHEL 8 yet
 
-# The packages for RHEL8 are almost the same as for RHEL7.
-# IBM publishes the packages as a repository here:
-# https://public.dhe.ibm.com/software/server/POWER/Linux/yum/OSS/RHEL/8/ppc64le/
-# To install the packages, you need to create an appropriate repofile 
-# or clone this repository (e.g. with Satellite product)
-__sap_hana_preconfigure_assert_required_ppc64le:
-  - librtas
-  - src
-  - rsct.core.utils
-  - rsct.core
-  - rsct.basic
-  - rsct.opt.storagerm
-  - devices.chrp.base.ServiceRM
-  - DynamicRM
-  - ncurses-libs
-  - readline
-  - sqlite
-  - sg3_utils
-  - libgcc
-  - libstdc++
-  - zlib
-  - iprutils
-  - lsvpd
-  - libvpd
-  - libservicelog
-  - servicelog
-  - powerpc-utils
-#  - powerpc-utils-python # this package is no longer available for RHEL8
-  - ppc64-diag
-  - IBMinvscout
-
-# Minimum required package levels for RHEL 8.0:
-__sap_hana_preconfigure_assert_min_packages_8_0:
-
-# Minimum required package levels for RHEL 8.1:
-__sap_hana_preconfigure_assert_min_packages_8_1:
-
-# Minimum required package levels for RHEL 8.2:
-__sap_hana_preconfigure_assert_min_packages_8_2:
-
-# Minimum required package levels for RHEL 8.3:
-__sap_hana_preconfigure_assert_min_packages_8_3:
-
-__sap_hana_preconfigure_assert_min_pkgs: "{{ lookup('vars','__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|string|replace (\".\", \"_\") ) }}"
+__sap_hana_preconfigure_assert_packagegroups: 
+  - "@Server"
 
 __sap_hana_preconfigure_assert_packages:
 # SAP NOTE 2772999:
@@ -94,8 +52,65 @@ __sap_hana_preconfigure_assert_packages:
 # SAP NOTE 2777782:
   - tuned-profiles-sap-hana
 
-__sap_hana_preconfigure_assert_packagegroups: 
-  - "@Server"
+# The packages for RHEL8 are almost the same as for RHEL7.
+# IBM publishes the packages as a repository here:
+# https://public.dhe.ibm.com/software/server/POWER/Linux/yum/OSS/RHEL/8/ppc64le/
+# To install the packages, you need to create an appropriate repofile 
+# or clone this repository (e.g. with Satellite product)
+__sap_hana_preconfigure_assert_required_ppc64le:
+  - librtas
+  - src
+  - rsct.core.utils
+  - rsct.core
+  - rsct.basic
+  - rsct.opt.storagerm
+  - devices.chrp.base.ServiceRM
+  - DynamicRM
+  - ncurses-libs
+  - readline
+  - sqlite
+  - sg3_utils
+  - libgcc
+  - libstdc++
+  - zlib
+  - iprutils
+  - lsvpd
+  - libvpd
+  - libservicelog
+  - servicelog
+  - powerpc-utils
+#  - powerpc-utils-python # this package is no longer available for RHEL8
+  - ppc64-diag
+  - IBMinvscout
+
+# Minimum required package levels for SAP HANA on RHEL 8.0 on x86_64: none
+__sap_hana_preconfigure_assert_min_packages_8_0_x86_64:
+
+# Minimum required package levels for SAP HANA on RHEL 8.0 on ppc64le:
+__sap_hana_preconfigure_assert_min_packages_8_0_ppc64le:
+  - [ 'kernel' , '4.18.0-80.15.1.el8_0' ]
+
+# Minimum required package levels for SAP HANA on RHEL 8.1 on x86_64:
+__sap_hana_preconfigure_assert_min_packages_8_1_x86_64:
+  - [ 'kernel' , '4.18.0-147.5.1.el8_1' ]
+
+# Minimum required package levels for SAP HANA on RHEL 8.1 on ppc64le:
+__sap_hana_preconfigure_assert_min_packages_8_1_ppc64le:
+  - [ 'kernel' , '4.18.0-147.5.1.el8_1' ]
+
+# Minimum required package levels for SAP HANA on RHEL 8.2 on x86_64: none
+__sap_hana_preconfigure_assert_min_packages_8_2_x86_64:
+
+# Minimum required package levels for SAP HANA on RHEL 8.2 on ppc64le: none
+__sap_hana_preconfigure_assert_min_packages_8_2_ppc64le:
+
+# Minimum required package levels for SAP HANA on RHEL 8.3 on x86_64: none
+__sap_hana_preconfigure_assert_min_packages_8_3_x86_64:
+
+# Minimum required package levels for SAP HANA on RHEL 8.3 on ppc64le: none
+__sap_hana_preconfigure_assert_min_packages_8_3_ppc64le:
+
+__sap_hana_preconfigure_assert_min_pkgs: "{{ lookup('vars','__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|string|replace (\".\", \"_\") + '_' + ansible_architecture) }}"
 
 # Network related kernel parameters as per SAP Note 2382421:
 __sap_hana_preconfigure_assert_kernel_parameters_default:
