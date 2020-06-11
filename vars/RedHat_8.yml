@@ -52,23 +52,15 @@ __sap_hana_preconfigure_assert_required_ppc64le:
 
 # Minimum required package levels for RHEL 8.0:
 __sap_hana_preconfigure_assert_min_packages_8_0:
-  - [ 'kernel' , '4.18.0-80.el8' ]
-  - [ 'setup' , '2.12.2-2.el8_1.1' ]
 
 # Minimum required package levels for RHEL 8.1:
 __sap_hana_preconfigure_assert_min_packages_8_1:
-  - [ 'kernel' , '4.18.0-147.el8' ]
-  - [ 'setup' , '2.12.2-2.el8_1.1' ]
 
 # Minimum required package levels for RHEL 8.2:
 __sap_hana_preconfigure_assert_min_packages_8_2:
-  - [ 'kernel' , '4.18.0-193.el8' ]
-  - [ 'setup' , '2.12.2-2.el8_1.1' ]
 
 # Minimum required package levels for RHEL 8.3:
 __sap_hana_preconfigure_assert_min_packages_8_3:
-  - [ 'kernel' , '4.18.0-147.el8.x86_64' ]
-  - [ 'setup' , '2.12.2-2.el8_1.1' ]
 
 __sap_hana_preconfigure_assert_min_pkgs: "{{ lookup('vars','__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|string|replace (\".\", \"_\") ) }}"
 

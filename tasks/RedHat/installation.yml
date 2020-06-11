@@ -135,97 +135,64 @@
   when: ansible_architecture == "ppc64le" 
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-- debug:
-    msg: "WARN: Minimum package check currently under development. Please check manually!"
-
-- name: Gather package facts
-  package_facts:
+- name: Check if minimum required package versions are installed
+  block:
+  - name: Gather package facts
+    package_facts:
 
 #- set_fact:
 #    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
 
-- debug:
-    var: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
+#- debug:
+#    var: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 
-- set_fact: 
-    reqpkgs: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
+  - set_fact: 
+      reqpkgs: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 
-- debug:
-    var: reqpkgs
-
-- set_fact: 
-    curpkgs: "{{ ansible_facts.packages }}"
+  - debug:
+      var: reqpkgs
 
 #- debug:
-#    var: curpkgs
+#    var: ansible_facts.packages
 
-- set_fact:
-    pkgs_to_install_update: |-
-      {% set ns = namespace() %}
-      {% set ns.pkgs = [] %}
-      {% for reqpkg in reqpkgs %}
-      {%   if not reqpkg[0] in curpkgs %}
-      {%     set _ = ns.pkgs.append(reqpkg | join('-')) %}
-      {%   else %}
-      {%     set pkg = curpkgs[reqpkg[0]][-1] %}
-      {%     set verrel = pkg.version ~ '-' ~ pkg.release %}
-      {%     if reqpkg[1] is version(verrel, '>') %}
-      {%       set _ = ns.pkgs.append(reqpkg | join('-')) %}
-      {%     else %}
-      {%       set _ = "pkg already installed with same or later version" %}
-      {%     endif %}
-      {%   endif %}
-      {% endfor %}
-      {{ ns.pkgs }}
-  debugger: on_failed
+  - set_fact:
+      pkgs_to_install_update: |-
+        {% set ns = namespace() %}
+        {% set ns.pkgs = [] %} 
+        {% for reqpkg in reqpkgs %}
+        {%   if not reqpkg[0] in ansible_facts.packages %}
+        {%     set _ = ns.pkgs.append("Package " + reqpkg | join('-') + " is missing and needs to be installed!") %}
+        {%   else %}
+        {%     set pkg = ansible_facts.packages[reqpkg[0]][-1] %}
+        {%     set verrel = pkg.version ~ '-' ~ pkg.release %}
+        {%     if reqpkg[1].replace ("el", "000") is version(verrel.replace ("el", "000"), '>') %}
+        {%       set _ = ns.pkgs.append("Package " + pkg.name + "-" + verrel + " needs to be updated to: " + reqpkg | join('-') + "!") %}
+        {%     else %}
+        {%       set _ = ns.pkgs.append("Package " + reqpkg | join('-') + " is already installed with same or later version. Currently installed: " + pkg.name + "-" + verrel)  %}
+        {%     endif %}
+        {%   endif %}
+        {% endfor %}
+        {{ ns.pkgs }}
+
+  - name: Assert that minimum required package versions are installed
+    assert:
+      that: "'is already installed' in line_item"
+      fail_msg: "FAIL: {{ line_item }}"
+      success_msg: "PASS: {{ line_item }}"
+    loop: "{{ pkgs_to_install_update | trim() }}"
+    loop_control:
+      loop_var: line_item
+    ignore_errors: yes
+  when: __sap_hana_preconfigure_assert_min_pkgs != ""
 
 - debug:
-    var: pkgs_to_install_update
+    msg: "PASS: No minimum required package version defined (variable __sap_hana_preconfigure_assert_min_pkgs)."
+  ignore_errors: yes
+  when: __sap_hana_preconfigure_assert_min_pkgs == ""
 
-#- name: Ensure minimum packages are installed
-#  block:
-#    - name: check if minimum release needs to be installed
-#      shell: |
-#        set -x
-#        required_pkg={{ pkg | join('-') }}
-#        newest=$(echo -e "$required_pkg\n$(rpm -q {{ pkg[0] }} )"| sort -V | tail -1)
-#        if [ $newest == $required_pkg ]; then
-#           echo $newest
-#        fi
-#      loop: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
-#      loop_control:
-#        loop_var: pkg
-#      register: sap_hana_preconfigure_assert_register_minpkglist
-#      changed_when: false
-
-# There might be an issue with the version comparison:
+# There might be an issue with the previous version comparison:
 # echo -e "kernel-3.10.0-1062.1.1.el7.x86_64\n$(rpm -q kernel)" | sort -V | tail 1
 # is showing kernel-3.10.0-1062.el7.x86_64 and not the latest one, which is kernel-3.10.0-1062.1.1.el7.x86_64
-
-#    - name: Initialize an empty list for our strings
-#      set_fact:
-#        sap_hana_preconfigure_assert_fact_minpkglist: []
-
-#    - name: Create list of packages to be installed
-#      set_fact:
-#        sap_hana_preconfigure_assert_fact_minpkglist: "{{ sap_hana_preconfigure_assert_fact_minpkglist | difference(['']) + [ pkg.stdout ] }}"
-#      loop: "{{ sap_hana_preconfigure_assert_register_minpkglist.results }}"
-#      loop_control:
-#        loop_var: pkg
-
-#    - debug:
-#        var: sap_hana_preconfigure_assert_fact_minpkglist
-
-
-#    - name: Install minimum packages if required
-#      yum:
-#        name: "{{  sap_hana_preconfigure_assert_fact_minpkglist }}"
-#        state: present
-#      when: not ( sap_hana_preconfigure_assert_fact_minpkglist == [ "" ] )
-
-#  when: 
-#    - sap_hana_preconfigure_assert_min_package_check|bool
-#    - not( (__sap_hana_preconfigure_assert_min_pkgs is undefined) or (__sap_hana_preconfigure_assert_min_pkgs is none) or (__sap_hana_preconfigure_assert_min_pkgs | trim == '') ) 
 
 - set_fact:
     needs_restarting_command: "needs-restarting -r"
