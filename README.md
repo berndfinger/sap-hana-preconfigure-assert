@@ -12,6 +12,10 @@ For finding out which SAP notes will be used by this role, please check the cont
 
 The role currently does not check if the grub2 config file had been regenerated after a change to GRUB_CMDLINE_LINUX in /etc/default/grub.
 
+The role currently does not check resource limits of the database group.
+
+The role does not check package groups. This is already part of role sap-preconfigure-assert.
+
 Role Variables
 --------------
 

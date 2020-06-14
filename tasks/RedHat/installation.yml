@@ -70,32 +70,6 @@
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
   when: sap_hana_preconfigure_assert_update == true
 
-- debug:
-    msg: "WARN: Package group check not implemented. Please check manually!"
-
-- name: Get install status of required package groups
-  shell: yum group list installed
-  register: yum_group_result
-  changed_when: no
-  ignore_errors: yes
-  args:
-    warn: false
-
-- debug:
-    var: yum_group_result
-
-#- name: Assert that all required package groups are installed
-#  assert:
-#    that:
-#      - "'{{ line_item }}' in yum_group_result.stdout_lines"
-#    fail_msg: "FAIL: Package group '{{ line_item }}' is not installed!"
-#    success_msg: "PASS: Package group '{{ line_item }}' is installed."
-#  with_items:
-#    - "{{ __sap_hana_preconfigure_assert_packagegroups|replace (\"@\", \"\") }}"
-#  loop_control:
-#    loop_var: line_item
-#  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-
 - name: Get install status of required packages
   shell: yum info installed {{ __sap_hana_preconfigure_assert_packages | map('quote') | join(' ') }} | awk '/Name/{n=$NF}/Version/{v=$NF}/Release/{r=$NF}/Description/{printf ("%s\n", n)}'
   register: yum_result
