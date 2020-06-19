@@ -136,7 +136,7 @@
         {%   else %}
         {%     set pkg = ansible_facts.packages[reqpkg[0]][-1] %}
         {%     set verrel = pkg.version ~ '-' ~ pkg.release %}
-        {%     if reqpkg[1].replace ("el", "0.0.") is version(verrel.replace ("el", "0.0."), '>', strict=false) %}
+        {%     if reqpkg[1].replace (".el", ".0.0.") is version(verrel.replace (".el", ".0.0."), '>', strict=false) %}
         {%       set _ = ns.pkgs.append("Package " + pkg.name + "-" + verrel + " needs to be updated to: " + reqpkg | join('-') + "!") %}
         {%     else %}
         {%       set _ = ns.pkgs.append("Package " + reqpkg | join('-') + " is already installed with same or later version. Currently installed: " + pkg.name + "-" + verrel)  %}

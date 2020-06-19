@@ -110,6 +110,26 @@ __sap_hana_preconfigure_assert_min_packages_8_3_x86_64:
 # Minimum required package levels for SAP HANA on RHEL 8.3 on ppc64le: none
 __sap_hana_preconfigure_assert_min_packages_8_3_ppc64le:
 
+__sap_hana_preconfigure_assert_min_packages_8_4_x86_64:
+
+__sap_hana_preconfigure_assert_min_packages_8_4_ppc64le:
+
+__sap_hana_preconfigure_assert_min_packages_8_5_x86_64:
+
+__sap_hana_preconfigure_assert_min_packages_8_5_ppc64le:
+
+__sap_hana_preconfigure_assert_min_packages_8_6_x86_64:
+
+__sap_hana_preconfigure_assert_min_packages_8_6_ppc64le:
+
+__sap_hana_preconfigure_assert_min_packages_8_7_x86_64:
+
+__sap_hana_preconfigure_assert_min_packages_8_7_ppc64le:
+
+__sap_hana_preconfigure_assert_min_packages_8_8_x86_64:
+
+__sap_hana_preconfigure_assert_min_packages_8_8_ppc64le:
+
 __sap_hana_preconfigure_assert_min_pkgs: "{{ lookup('vars','__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|string|replace (\".\", \"_\") + '_' + ansible_architecture) }}"
 
 # Network related kernel parameters as per SAP Note 2382421:
