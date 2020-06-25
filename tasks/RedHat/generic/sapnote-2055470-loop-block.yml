@@ -2,7 +2,7 @@
 
 # loop block for sapnote/assert-2055470.yml
 
-- name: Get {{ line_item.name }} from {{ __sap_hana_preconfigure_assert_kernel_parameters_default_ppc64le }}
+- name: Get {{ line_item.name }} from /etc/sysctl.d/ibm_largesend.conf
   command: awk 'BEGIN{FS="="}/{{ line_item.name }}/{print $NF}' /etc/sysctl.d/ibm_largesend.conf
   register: ibm_largesend_conf_result
   changed_when: no
