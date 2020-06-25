@@ -96,10 +96,17 @@
 ### # /opt/ibm/lop/configure
 ### # yum -y install ibm-power-managed-rhel7
 ###
+- name: Get install status of required IBM packages
+  shell: yum info installed {{ __sap_hana_preconfigure_assert_required_ppc64le | map('quote') | join(' ') }} | awk '/Name/{n=$NF}/Version/{v=$NF}/Release/{r=$NF}/Description/{printf ("%s\n", n)}'
+  register: yum_ibm_result
+  changed_when: no
+  args:
+    warn: false
+
 - name: Assert that all required IBM packages are installed
   assert:
     that:
-      - "'{{ line_item }}' in yum_result.stdout_lines"
+      - "'{{ line_item }}' in yum_ibm_result.stdout_lines"
     fail_msg: "FAIL: Package '{{ line_item }}' is not installed!"
     success_msg: "PASS: Package '{{ line_item }}' is installed."
   with_items:

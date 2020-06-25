@@ -14,7 +14,7 @@
       assert:
         that:
           - "'transparent_hugepage=never' in grep_default_grub_result.stdout"
-        fail_msg: "FAIL: 'ptransparent_hugepage=never' is not in GRUB_CMDLINE_LINUX in /etc/default/grub!"
+        fail_msg: "FAIL: 'transparent_hugepage=never' is not in GRUB_CMDLINE_LINUX in /etc/default/grub!"
         success_msg: "PASS: 'transparent_hugepage=never' is in GRUB_CMDLINE_LINUX in /etc/default/grub."
       ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
