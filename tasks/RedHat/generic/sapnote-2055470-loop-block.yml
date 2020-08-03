@@ -17,7 +17,7 @@
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - name: Get {{ line_item.name }} from sysctl
-  shell: sysctl -n {{ line_item.name }} | awk '{gsub ("	", " "); print}'
+  shell: sysctl -n {{ line_item.name }} | awk '{gsub ("\t", " "); print}'
   register: sysctl_result
   changed_when: no
   ignore_errors: yes

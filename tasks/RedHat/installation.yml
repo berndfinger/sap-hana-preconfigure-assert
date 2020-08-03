@@ -113,7 +113,7 @@
     - "{{ __sap_hana_preconfigure_assert_required_ppc64le }}"
   loop_control:
     loop_var: line_item
-  when: ansible_architecture == "ppc64le" 
+  when: ansible_architecture == "ppc64le"
   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
 - name: Check if minimum required package versions are installed
@@ -124,7 +124,7 @@
 #- set_fact:
 #    __sap_hana_preconfigure_assert_min_pkgs: "{{ '__sap_hana_preconfigure_assert_min_packages_' + ansible_distribution_version|replace (\".\", \"_\") }}"
 
-  - set_fact: 
+  - set_fact:
       reqpkgs: "{{ __sap_hana_preconfigure_assert_min_pkgs }}"
 
   - debug:
@@ -136,7 +136,7 @@
   - set_fact:
       pkgs_to_install_update: |-
         {% set ns = namespace() %}
-        {% set ns.pkgs = [] %} 
+        {% set ns.pkgs = [] %}
         {% for reqpkg in reqpkgs %}
         {%   if not reqpkg[0] in ansible_facts.packages %}
         {%     set _ = ns.pkgs.append("Package " + reqpkg | join('-') + " is missing and needs to be installed!") %}

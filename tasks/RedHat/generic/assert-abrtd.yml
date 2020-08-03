@@ -5,10 +5,10 @@
 
 #- debug:
 #    var: ansible_facts.packages
-  
+
 - debug:
     var: ansible_facts.packages['abrtd']
-  
+
 #- name: Check abrt
 #  block:
 #    - name: Assert that abrtd is disabled
@@ -34,7 +34,7 @@
         fail_msg: "FAIL: Service 'abrtd' is not disabled!"
         success_msg: "PASS: Service 'abrtd' is disabled."
       ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-    
+
     - name: Assert that abrtd is inactive
       assert:
         that:

@@ -20,7 +20,7 @@
         that: "stat_saphana_conf.stat.isreg == true"
         fail_msg: "FAIL: The file {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} does not exist or is no regular file!"
         success_msg: "PASS: The file {{ __sap_hana_preconfigure_assert_etc_sysctl_saphana_conf }} exists and is a regular file."
-      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}" 
+      ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
   when: sap_hana_preconfigure_assert_config_all|d(true) or sap_hana_preconfigure_assert_2382421|d(false)
 

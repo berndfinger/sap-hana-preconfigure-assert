@@ -30,14 +30,13 @@
         success_msg: "PASS: The file /etc/rc.d/rc.local exists and is a regular file."
       ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
 
-    
     - name: Assert that the mode of file /etc/rc.d/rc.local is 0644
       assert:
         that: "stat_rc_local.stat.mode == '0644'"
         fail_msg: "FAIL: The file /etc/rc.d/rc.local does not have mode 0644!"
         success_msg: "PASS: The file /etc/rc.d/rc.local has mode 0644."
       ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-    
+
     - name: Get the contents of file /etc/rc.d/rc.local (x86_64 platform only)
       command: grep cpupower /etc/rc.d/rc.local
       register: grep_rc_local_result
@@ -60,7 +59,7 @@
 
     - debug:
         var: cpupower_result.stdout_lines
-  
+
     - name: Assert that the current status of the CPU Governor for performance is XXX (x86_64 platform only)
       assert:
         that:

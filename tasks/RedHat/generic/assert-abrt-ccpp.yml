@@ -5,10 +5,10 @@
 
 #- debug:
 #    var: ansible_facts.packages
-  
+
 - debug:
     var: ansible_facts.packages['abrt-ccpp']
-  
+
 #- name: Check abrt
 #  block:
 #    - name: Assert that abrt-ccpp is disabled
@@ -34,7 +34,7 @@
         fail_msg: "FAIL: Service 'abrt-ccpp' is not disabled!"
         success_msg: "PASS: Service 'abrt-ccpp' is disabled."
       ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors|d(false) }}"
-    
+
     - name: Assert that abrt-ccpp is inactive
       assert:
         that:
