@@ -41,6 +41,8 @@ sap_hana_preconfigure_assert_req_repos_RedHat_7_ppc64le: "{{ __sap_hana_preconfi
 sap_hana_preconfigure_assert_req_repos_RedHat_8_x86_64: "{{ __sap_hana_preconfigure_assert_req_repos_RedHat_8_x86_64 }}"
 sap_hana_preconfigure_assert_req_repos_RedHat_8_ppc64le: "{{ __sap_hana_preconfigure_assert_req_repos_RedHat_8_ppc64le }}"
 
+sap_hana_preconfigure_assert_update: yes
+
 ##  HANA kernel parameters
 # [SAP Note 238241](https://launchpad.support.sap.com/#/notes/238241) defines kernel parameters that all Linux systems need to set.
 # The default parameter recomendations are dependent on the OS release. Hence the OS dependant default setting is defined in
