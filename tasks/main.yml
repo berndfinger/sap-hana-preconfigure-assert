@@ -1,5 +1,11 @@
 ---
 
+- name: Print deprecation notice
+  fail:
+    msg: 
+      - "This role is deprecated. Role sap_hana_preconfigure, when run in assert mode, provides all the features of this role, and more."
+      - "You can find the role in repository https://www.github.com/sap-linuxlab/community.sap_install ."
+
 - name: include os specific vars
   include_vars: '{{ item }}'
   with_first_found:
