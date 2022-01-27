@@ -1,6 +1,7 @@
-Note: Development of this software has stopped.
+Note: Development and maintenance of this software has stopped.
 
-Its functionality is covered by role sap_hana_preconfigure, which can be found in the following repository:
+Its functional scope is covered and expanded by Ansible Collection sap_install and transferred to
+the GitHub organization sap-linuxlab as a joint initiative by SAP Technology Partners, which can be found in the following repository:
 https://github.com/sap-linuxlab/community.sap_install
 
 Role sap_hana_preconfigure can be run in assert mode by using parameter sap_hana_preconfigure_assert.
