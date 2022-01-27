@@ -1,3 +1,5 @@
+@@include[DISCONTINUATION_NOTICE.md](DISCONTINUATION_NOTICE.md)
+
 sap-hana-preconfigure
 =====================
 
